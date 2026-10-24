@@ -9,8 +9,6 @@
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;background:#000;color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 [hidden]{display:none!important}
-
-/* ===== Trang phát video ===== */
 #view{position:fixed;inset:0;background:#000;overflow:hidden}
 #bg{position:absolute;inset:0;background:linear-gradient(120deg,#10151f,#1b2440,#2a1f3d,#10151f);background-size:300% 300%;animation:drift 18s ease infinite}
 @keyframes drift{50%{background-position:100% 50%}}
@@ -32,8 +30,7 @@ html,body{height:100%;background:#000;color:var(--fg);font:15px/1.45 system-ui,-
 #links a{border:1px solid;border-radius:999px;padding:6px 14px;text-decoration:none;font-size:14px}
 #vcw{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;display:flex;align-items:center;gap:8px;background:rgba(16,18,24,.55);border:1px solid var(--line);border-radius:10px;padding:8px 12px;backdrop-filter:blur(10px)}
 #vcw input{width:120px;accent-color:var(--acc)}
-
-/* ===== Trang chỉnh cấu hình (#admin) ===== */
+#vtint{position:absolute;inset:0;pointer-events:none;opacity:0}
 #adminPage{position:fixed;inset:0;overflow:auto;background:#0a0a0b;padding:calc(24px + env(safe-area-inset-top,0px)) 16px 48px}
 main{max-width:920px;margin:0 auto;display:grid;gap:16px}
 h1{font-size:26px;font-weight:600}
@@ -44,7 +41,7 @@ h2{font-size:22px;font-weight:600;margin-top:10px}
 .fld>span{font-weight:500}
 .note{font-size:13px;color:var(--mute)}
 .err{color:var(--bad)}
-input[type=text],textarea,select{background:#0b0c0e;color:var(--fg);border:1px solid #23262d;border-radius:8px;padding:10px 12px;font:inherit;width:100%}
+input[type=text],input[type=number],textarea,select{background:#0b0c0e;color:var(--fg);border:1px solid #23262d;border-radius:8px;padding:10px 12px;font:inherit;width:100%}
 textarea{resize:vertical;min-height:70px}
 input[type=file]{color:var(--mute);font-size:13px;width:100%}
 input[type=range]{accent-color:var(--acc);width:100%}
@@ -74,34 +71,81 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:8px;background:#fff;color:#1f1f1f;border:0;border-radius:10px;padding:13px 16px;font:inherit;font-weight:600;cursor:pointer}
 .gbtn:hover{background:#eef0f2}
 .gbtn svg{width:20px;height:20px;flex:none}
+#pvwrap{position:sticky;top:8px;z-index:10;background:var(--card);padding:8px 0;display:grid;justify-items:center;border-bottom:1px solid #1d2026}
+#pvbox{position:relative;overflow:hidden;background:#000;border-radius:10px;width:100%;aspect-ratio:16/9}
+#pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#ptint{position:absolute;inset:0;pointer-events:none;opacity:0}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.presets button{background:#0b0c0e;color:var(--fg);border:1px solid #23262d;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+.presets button:hover{border-color:var(--acc)}
+.mini{background:#2a2e38;color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer;justify-self:start}
+
+/* ===== Bảng điều khiển (thanh bên) ===== */
+.dash{position:fixed;inset:0;display:grid;grid-template-columns:260px minmax(0,1fr);gap:0;background:#0a0a0b}
+.dash>main{max-width:none;margin:0;min-width:0;height:100%;overflow:auto;padding:28px 32px 56px;align-content:start}
+.sec{max-width:980px;width:100%}
+.sec{display:none}
+.sec.on{display:grid;gap:16px}
+.side{height:100%;display:flex;flex-direction:column;gap:14px;background:#0d0e11;border-right:1px solid #1d2026;padding:18px 16px;overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;font-size:17px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4da3ff,#9b6bff);display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.srch{display:flex;align-items:center;gap:8px;background:#0b0c0e;border:1px solid #23262d;border-radius:10px;padding:0 10px;color:var(--mute)}
+.srch svg{width:16px;height:16px;flex:none}
+.srch input{border:0!important;background:none!important;padding:10px 0!important;min-width:0;flex:1;outline:none;color:var(--fg)}
+kbd{font-size:11px;border:1px solid #2a2e38;border-radius:6px;padding:3px 6px;color:var(--mute);font-family:inherit}
+#nav{display:grid;gap:4px}
+#nav button{display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--fg);font:inherit;font-weight:500;padding:11px 12px;border-radius:10px;cursor:pointer;text-align:left}
+#nav button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#nav button:hover{background:#15171c}
+#nav button.on{background:#2a1d4a;color:#fff;box-shadow:inset 0 0 0 1px rgba(155,107,255,.35)}
+.sidefoot{margin-top:auto;display:grid;gap:10px}
+.helpbox{display:grid;gap:8px;background:#101216;border:1px solid #1d2026;border-radius:12px;padding:12px;font-size:13px;color:var(--mute)}
+.sidebtn{display:block;text-align:center;text-decoration:none;color:#fff;background:#1e2230;border:1px solid #343a55;border-radius:10px;padding:9px;font-weight:600}
+.sharebtn{background:#3a2370;color:#fff;border:1px solid #6b45c9;border-radius:12px;padding:12px;font:inherit;font-weight:600;cursor:pointer}
+.sharebtn:hover{background:#4a2d8c}
+.userbox{display:flex;align-items:center;gap:10px;background:#101216;border:1px solid #1d2026;border-radius:12px;padding:10px}
+.av{width:34px;height:34px;border-radius:50%;background:#2a2e38;display:grid;place-items:center;font-weight:600;flex:none}
+.un{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.ib{background:#1b1d24;color:var(--fg);border:1px solid #2a2e38;border-radius:8px;width:34px;height:34px;cursor:pointer;font:inherit;flex:none}
+.ib:hover{border-color:var(--acc)}
+.plat{display:flex;flex-wrap:wrap;gap:10px}
+.plat button{width:56px;height:56px;border-radius:16px;border:1px solid #23262d;font:700 15px/1 system-ui,sans-serif;cursor:pointer;color:#fff;transition:transform .15s}
+.plat button:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.plat button.wide{width:auto;padding:0 18px;background:#15171c;font-weight:500;font-size:14px}
+.linkrows{display:grid;gap:10px}
+.lrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lrow .ln{flex:1 1 130px;width:auto}
+.lrow .lu{flex:3 1 220px;width:auto}
+details summary{cursor:pointer;color:var(--mute);font-size:13px}
+details textarea{margin-top:8px}
+#toast{position:fixed;right:16px;bottom:16px;z-index:50;background:#1b1d24;border:1px solid #2f7a42;border-radius:10px;padding:10px 14px;max-width:min(360px,calc(100% - 32px));font-size:14px}
+#toast.err{border-color:#7b1e25;color:var(--bad)}
+@media(max-width:860px){.dash{grid-template-columns:68px minmax(0,1fr)}.side{padding:12px 8px;align-items:center}.brand b,.srch,#nav button span,.helpbox,.un{display:none}.brand{justify-content:center}#nav{justify-items:center}#nav button{padding:12px;justify-content:center}.sidefoot{width:100%}.sharebtn{font-size:11px;padding:10px 2px}.userbox{flex-direction:column;padding:8px 4px;gap:6px}.dash>main{padding:18px 14px 48px}}
 </style>
 </head>
 <body>
 
-<!-- ================= TRANG PHÁT VIDEO (mọi người thấy) ================= -->
 <div id="view">
   <div id="bg"></div>
   <video id="v" playsinline></video>
+  <div id="vtint"></div>
   <div id="shade"></div>
   <div id="vig" hidden></div>
   <canvas id="snow" hidden></canvas>
-
   <div id="card" hidden>
     <div id="cn"></div>
     <div id="cd"></div>
     <div id="cl"></div>
     <div id="links"></div>
   </div>
-
   <div id="vcw" hidden><span class="note" style="color:inherit">Âm lượng</span><input type="range" id="vcr" min="0" max="2" step="0.05" aria-label="Âm lượng"></div>
-
   <div id="start" role="button" tabindex="0">
     <b>Bấm để vào</b>
     <span id="hint"></span>
   </div>
 </div>
 
-<!-- ================= TRANG CHỈNH CẤU HÌNH (thêm #admin vào cuối địa chỉ) ================= -->
 <div id="adminPage" hidden>
   <div class="card" id="loginBox" hidden>
     <div class="lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
@@ -113,16 +157,19 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
     </button>
     <p class="note" id="lmsg"></p>
   </div>
-  <main id="adminMain" hidden>
-    <h1>Chỉnh cấu hình trang</h1>
-    <div class="card">
-      <ol>
-        <li>Chỉnh các mục bên dưới.</li>
-        <li>Kéo xuống cuối trang, bấm <b>Lưu lên web</b>. Mọi người tải lại trang sẽ thấy cấu hình mới.</li>
-        <li>Chưa cấu hình Firebase (chế độ thử trên máy): bấm <b>Sao chép cấu hình</b> rồi dán vào Notepad++ thay đoạn <b>const CONFIG</b> ở đầu phần script.</li>
-      </ol>
-    </div>
-
+  <div id="adminMain" class="dash" hidden>
+    <aside class="side">
+      <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span><b>Quản trị trang</b></div>
+      <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="navq" placeholder="Tìm tính năng..." autocomplete="off"><kbd>Ctrl K</kbd></label>
+      <nav id="nav"></nav>
+      <div class="sidefoot">
+        <div class="helpbox"><span>Xem trang của bạn</span><a class="sidebtn" href="#">Xem trang</a></div>
+        <button class="sharebtn" id="save2" type="button">Lưu lên web</button>
+        <div class="userbox"><span class="av" id="av">T</span><span class="un" id="uname"></span><button class="ib" id="logout2" type="button" title="Đăng xuất" hidden>&#x238B;</button></div>
+      </div>
+    </aside>
+    <main>
+    <section class="sec" data-sec="video">
     <h2>Video</h2>
     <div class="card">
       <div class="grid">
@@ -134,7 +181,56 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
       <label class="chip" style="justify-self:start"><input type="checkbox" id="loop"> Lặp lại video</label>
       <p class="note" id="msg"></p>
     </div>
+    </section>
+    <section class="sec" data-sec="fx">
+    <h2>ADMIN</h2>
+    <div class="card">
+      <div id="pvwrap"><div id="pvbox"><video id="pv" muted loop playsinline controls preload="metadata"></video><div id="ptint"></div></div></div>
+      <p class="note">Khung xem thử ở trên đổi ngay khi bạn kéo thanh. Xem thử mặc định tắt tiếng và không cắt đầu/cuối. Các chỉnh sửa chỉ áp dụng lúc phát, file video gốc không bị thay đổi.</p>
 
+      <div class="fld"><span>Bộ lọc có sẵn</span><div class="presets" id="presets"></div></div>
+
+      <div class="fld"><span>Màu sắc</span></div>
+      <div class="grid" id="fxcolor"></div>
+
+      <div class="fld"><span>Phủ màu</span></div>
+      <div class="grid">
+        <div class="fld"><span>Màu phủ</span><label class="col"><input type="color" id="tintc"><code id="tintcv"></code></label></div>
+        <label class="fld"><span>Kiểu hòa màu</span>
+          <select id="tintBlend"><option value="normal">Phủ thường</option><option value="color">Màu</option><option value="overlay">Chồng màu (overlay)</option><option value="soft-light">Ánh sáng dịu</option><option value="multiply">Nhân tối</option><option value="screen">Làm sáng</option></select></label>
+        <div id="fxtint" style="display:contents"></div>
+      </div>
+
+      <div class="fld"><span>Khung hình và tốc độ</span></div>
+      <div class="grid" id="fxmove"></div>
+      <div class="grid">
+        <label class="fld"><span>Xoay</span><select id="rot"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+        <label class="fld"><span>Cách lấp khung</span><select id="fit"><option value="cover">Phủ kín (cắt viền)</option><option value="contain">Vừa khung (có viền đen)</option></select></label>
+        <div class="fld"><span>Lật hình</span><div class="chips"><label class="chip"><input type="checkbox" id="flipH"> Ngang</label><label class="chip"><input type="checkbox" id="flipV"> Dọc</label></div></div>
+      </div>
+
+      <div class="fld"><span>Cắt video (tính bằng giây)</span></div>
+      <div class="grid">
+        <div class="fld"><span>Bắt đầu từ giây</span><input type="number" id="trimS" min="0" step="0.1"><button class="mini" type="button" id="getS">Lấy từ khung xem thử đang dừng</button></div>
+        <div class="fld"><span>Kết thúc ở giây (0 là phát tới hết)</span><input type="number" id="trimE" min="0" step="0.1"><button class="mini" type="button" id="getE">Lấy từ khung xem thử đang dừng</button></div>
+      </div>
+      <p class="note">Mẹo: tạm dừng khung xem thử ở đúng cảnh muốn cắt, rồi bấm nút "Lấy từ khung xem thử".</p>
+
+      <div class="fld" style="display:flex;align-items:center;gap:12px"><span class="sw"><input type="checkbox" id="fxresetsw"><i></i></span><span>Đặt lại mọi hiệu ứng video (tắt công tắc để khôi phục như cũ)</span></div>
+    </div>
+    </section>
+    <section class="sec" data-sec="links">
+    <h2>Liên kết</h2>
+    <div class="card">
+      <div class="fld"><span>Thêm liên kết mạng xã hội</span><span class="note">Bấm vào một biểu tượng để thêm, rồi dán địa chỉ trang của bạn vào ô bên dưới.</span></div>
+      <div class="plat" id="plat"></div>
+      <div class="linkrows" id="linkrows"></div>
+      <p class="note" id="linkempty">Chưa có liên kết nào. Bấm vào một biểu tượng ở trên để thêm.</p>
+      <details><summary>Sửa dạng văn bản (mỗi dòng: Tên | https://...)</summary>
+        <textarea id="lk" placeholder="Facebook | https://facebook.com/..."></textarea></details>
+    </div>
+    </section>
+    <section class="sec" data-sec="profile">
     <h2>Tùy chỉnh chung</h2>
     <div class="card">
       <div class="fld" style="display:flex;align-items:center;gap:12px"><span class="sw"><input type="checkbox" id="showcard"><i></i></span><span>Hiện thẻ hồ sơ trên trang phát (mặc định tắt)</span></div>
@@ -151,9 +247,9 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
         <div class="fld"><span>Phát sáng</span>
           <div class="chips"><label class="chip"><input type="checkbox" id="gn"> Tên</label><label class="chip"><input type="checkbox" id="gs"> Liên kết</label></div></div>
       </div>
-      <label class="fld"><span>Liên kết (mỗi dòng một liên kết, dạng: Tên | https://...)</span><textarea id="lk" placeholder="Facebook | https://facebook.com/..."></textarea></label>
     </div>
-
+    </section>
+    <section class="sec" data-sec="color">
     <h2>Màu sắc</h2>
     <div class="card">
       <div class="grid">
@@ -163,9 +259,10 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
         <div class="fld"><span>Màu biểu tượng / liên kết</span><label class="col"><input type="color" id="ic"><code id="icv"></code></label></div>
         <div class="fld" id="bc2w" hidden><span>Màu nền thứ hai (chuyển màu)</span><label class="col"><input type="color" id="bc2"><code id="bc2v"></code></label></div>
       </div>
-      <button class="gradbtn" id="gradbtn" type="button">Bật nền thẻ chuyển màu</button>
+      <div class="fld" style="display:flex;align-items:center;gap:12px"><span class="sw"><input type="checkbox" id="gradsw"><i></i></span><span>Bật nền thẻ chuyển màu</span></div>
     </div>
-
+    </section>
+    <section class="sec" data-sec="other">
     <h2>Khác</h2>
     <div class="card">
       <div class="grid">
@@ -174,7 +271,8 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
         <div class="fld"><span>Thanh âm lượng cho người xem</span><span class="sw"><input type="checkbox" id="vc"><i></i></span></div>
       </div>
     </div>
-
+    </section>
+    <section class="sec" data-sec="config">
     <h2>Cấu hình để dán vào file</h2>
     <div class="card">
       <textarea id="cfgout" readonly spellcheck="false"></textarea>
@@ -187,83 +285,72 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
         <span class="note" id="copied"></span>
       </div>
     </div>
-  </main>
+
+    <div class="card">
+      <ol>
+        <li>Chỉnh các mục bên dưới.</li>
+        <li>Bấm <b>Lưu lên web</b> (nút tím ở thanh bên trái). Mọi người tải lại trang sẽ thấy cấu hình mới.</li>
+        <li>Chưa cấu hình Firebase (chế độ thử trên máy): bấm <b>Sao chép cấu hình</b> rồi dán vào Notepad++ thay đoạn <b>const CONFIG</b> ở đầu phần script.</li>
+      </ol>
+    </div>
+    </section>
+    </main>
+  </div>
+  <div id="toast" hidden></div>
 </div>
 
 <script>
+location.hash = '#admin';
 // ===BAT DAU CAU HINH=== (đoạn này nằm giữa hai dòng đánh dấu, có thể thay bằng cấu hình sao chép từ trang #admin)
 const CONFIG = {
-  // Địa chỉ video: khi test đặt file video.mp4 cạnh index.html. Khi đưa lên web, đổi thành link R2, ví dụ https://pub-xxxx.r2.dev/video.mp4
-  "videoUrl": "video.mp4",
-  "volume": 2,
-  "darkness": 25,
-  "loop": true,
-  "show": false,
-  "name": "hoangphuoc",
-  "desc": "",
-  "loc": "",
-  "bgfx": "none",
-  "nfx": "none",
-  "opacity": 60,
-  "blur": 10,
-  "glowName": false,
-  "glowLinks": false,
-  "links": "",
-  "accent": "#9b6bff",
-  "text": "#f3f5f8",
-  "bg": "#10121a",
-  "icon": "#f3f5f8",
-  "grad": false,
-  "bg2": "#2a1f4d",
-  "animTitle": false,
-  "swap": false,
-  "volCtl": false,
-  "adminEnabled": true
+  "videoUrl": "video.mp4", "volume": 2, "darkness": 25, "loop": true, "show": false, "name": "hoangphuoc", "desc": "", "loc": "",
+  "bgfx": "none", "nfx": "none", "opacity": 60, "blur": 10, "glowName": false, "glowLinks": false, "links": "",
+  "accent": "#9b6bff", "text": "#f3f5f8", "bg": "#10121a", "icon": "#f3f5f8", "grad": false, "bg2": "#2a1f4d",
+  "animTitle": false, "swap": false, "volCtl": false,
+  "fb": 100, "fc": 100, "fs": 100, "fh": 0, "fbl": 0, "fg": 0, "fse": 0, "fi": 0,
+  "tint": "#4da3ff", "tintAmt": 0, "tintBlend": "overlay", "speed": 1, "flipH": false, "flipV": false, "rot": 0,
+  "zoom": 100, "px": 0, "py": 0, "fit": "cover", "trimS": 0, "trimE": 0, "adminEnabled": true
 };
 // ===KET THUC CAU HINH===
 
 // ===CAU HINH FIREBASE=== (điền sau khi tạo project Firebase; để nguyên XXX thì trang chạy ở chế độ thử trên máy)
-const FIREBASE = { apiKey: 'AIzaSyA8OpJVYEZapzGl4EjZQeOPfwsxFILa-gI', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
+const FIREBASE = { apiKey: 'XXX', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
 const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';   // chỉ email này được lưu cấu hình
 // ===KET THUC CAU HINH FIREBASE===
 const FB_ON = FIREBASE.apiKey !== 'XXX';
 const DOC = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE.projectId + '/databases/(default)/documents/site/config';
 
-const $ = id => document.getElementById(id), v = $('v');
+const $ = id => document.getElementById(id), v = $('v'), pv = $('pv');
 const C = Object.assign({}, CONFIG);
 let ac = null, gain = null, level = C.volume, noBoost = false, entered = false, hasVideo = false, curSrc = '', blobUrl = null;
 
-/* ---------- chuyển trang: (trống) = phát video, #admin = chỉnh cấu hình ---------- */
 function route() {
   const admin = C.adminEnabled && location.hash === '#admin';
   $('adminPage').hidden = !admin;
   $('view').hidden = admin;
-  if (admin) v.pause(); else if (entered && hasVideo) v.play().catch(() => {});
+  if (admin) { v.pause(); openTab(curTab); }
+  else { pv.pause(); if (entered && hasVideo) v.play().catch(() => {}); }
 }
 addEventListener('hashchange', route);
 
-/* ---------- nạp video ---------- */
 function loadVideo(src, isBlob) {
   curSrc = src; hasVideo = !!src;
   v.removeAttribute('crossorigin');
-  if (!src) { v.removeAttribute('src'); v.style.display = 'none'; $('bg').style.display = ''; $('hint').textContent = 'Chưa có video. Hãy đặt địa chỉ video trong cấu hình.'; return; }
+  if (!src) { v.removeAttribute('src'); pv.removeAttribute('src'); v.style.display = 'none'; $('bg').style.display = ''; $('hint').textContent = 'Chưa có video. Hãy đặt địa chỉ video trong cấu hình.'; return; }
   v.style.display = 'block'; $('bg').style.display = 'none';
-  // Tăng âm lượng trên 100% cần Web Audio; file mở thẳng từ ổ đĩa (file://) thì trình duyệt không cho phép
   noBoost = location.protocol === 'file:' && !isBlob;
   if (!isBlob && /^https?:/i.test(src) && new URL(src, location.href).origin !== location.origin) v.crossOrigin = 'anonymous';
   v.src = src; v.load();
+  pv.src = src; pv.load(); if (!$('adminPage').hidden && curTab === 'fx') pv.play().catch(() => {});
   $('hint').textContent = '';
 }
 v.onerror = () => {
-  if (v.crossOrigin && !ac) {            // máy chủ chưa bật CORS: phát bình thường, không tăng âm
-    v.removeAttribute('crossorigin'); noBoost = true; v.src = curSrc; v.load(); return;
-  }
+  if (v.crossOrigin && !ac) { v.removeAttribute('crossorigin'); noBoost = true; v.src = curSrc; v.load(); return; }
   $('hint').textContent = 'Không phát được video. Kiểm tra địa chỉ video hoặc định dạng (nên dùng MP4 H.264).';
   $('msg').textContent = 'Không phát được video này.'; $('msg').className = 'note err';
 };
-v.onloadedmetadata = () => { $('msg').textContent = 'Video ' + v.videoWidth + '×' + v.videoHeight + ' phát nguyên bản, không bị nén.' + (noBoost ? ' (Mở file trực tiếp từ ổ đĩa nên chưa tăng được trên 100% âm lượng; khi đưa lên web sẽ tăng được.)' : ''); $('msg').className = 'note'; };
+v.onloadedmetadata = () => { if (+C.trimS > 0) v.currentTime = +C.trimS; $('msg').textContent = 'Video ' + v.videoWidth + '×' + v.videoHeight + ', dài ' + (v.duration || 0).toFixed(1) + ' giây, phát nguyên bản, không bị nén.' + (noBoost ? ' (Mở file trực tiếp từ ổ đĩa nên chưa tăng được trên 100% âm lượng; khi đưa lên web sẽ tăng được.)' : ''); $('msg').className = 'note'; };
 
-/* ---------- âm thanh: tối đa 200%, có bộ giới hạn đỉnh để không rè ---------- */
 function setupAudio() {
   if (ac || noBoost) return;
   try {
@@ -283,20 +370,18 @@ function setLevel(x) {
   if (gain) gain.gain.value = x; else v.volume = Math.min(1, x);
   $('volv').textContent = Math.round(x * 100) + '%'; $('vol').value = x; $('vcr').value = x;
 }
-
 const enter = () => {
   entered = true; $('start').hidden = true;
   setupAudio(); if (ac && ac.state === 'suspended') ac.resume();
   setLevel(level);
+  if (hasVideo && +C.trimS > 0 && v.currentTime < +C.trimS) v.currentTime = +C.trimS;
   if (hasVideo) { v.muted = false; v.play().catch(() => { v.muted = true; v.play().catch(() => {}); }); }
 };
 $('start').onclick = enter;
 $('start').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') enter(); };
 $('vcr').oninput = e => setLevel(+e.target.value);
 
-/* ---------- hiệu ứng ---------- */
 const rgba = (h, a) => { const n = parseInt(h.slice(1), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; };
-
 let sraf = 0;
 function snow(on) {
   cancelAnimationFrame(sraf);
@@ -327,7 +412,6 @@ function animTitle(name, on) {
   tt = setInterval(() => { i = (i + 1) % (L * 2); const k = i <= L ? i : L * 2 - i; document.title = name.slice(0, Math.max(k, 1)) + '|'; }, 300);
 }
 
-/* ---------- áp dụng cấu hình lên trang phát video ---------- */
 function apply() {
   const name = C.name || 'hoangphuoc', card = $('card'), op = C.opacity / 100;
   card.hidden = !C.show;
@@ -347,7 +431,7 @@ function apply() {
   const L = $('links'); L.innerHTML = '';
   C.links.split('\n').forEach(line => {
     const p = line.split('|').map(s => s.trim()), label = p[0], href = p[1] || '';
-    if (!label || !/^https?:\/\//i.test(href)) return;
+    if (!label || !/^(https?:\/\/|mailto:)/i.test(href)) return;
     const a = document.createElement('a');
     a.textContent = label; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
     a.style.color = C.icon; a.style.borderColor = rgba(C.accent, .7);
@@ -358,36 +442,215 @@ function apply() {
   snow(C.bgfx === 'snow');
   $('vcw').hidden = !C.volCtl;
   $('shade').style.opacity = C.darkness / 100;
-  v.loop = !!C.loop;
+  const trimmed = +C.trimS > 0 || +C.trimE > 0;
+  v.loop = !!C.loop && !trimmed;
+  v.defaultPlaybackRate = v.playbackRate = +C.speed || 1;
+  pv.defaultPlaybackRate = pv.playbackRate = +C.speed || 1;
+  fxApply(v); fxApply(pv); tintApply($('vtint')); tintApply($('ptint'));
   animTitle(name, C.animTitle);
 }
 
-/* ---------- trang chỉnh cấu hình ---------- */
-const F = [ // [id ô nhập, khóa trong CONFIG, kiểu: t = chữ, n = số, c = bật/tắt]
+const F = [
   ['vurl', 'videoUrl', 't'], ['vol', 'volume', 'n'], ['dark', 'darkness', 'n'], ['loop', 'loop', 'c'],
   ['showcard', 'show', 'c'], ['nm', 'name', 't'], ['ds', 'desc', 't'], ['loc', 'loc', 't'], ['bgfx', 'bgfx', 't'], ['nfx', 'nfx', 't'],
   ['op', 'opacity', 'n'], ['bl', 'blur', 'n'], ['gn', 'glowName', 'c'], ['gs', 'glowLinks', 'c'], ['lk', 'links', 't'],
   ['ac', 'accent', 't'], ['tc', 'text', 't'], ['bc', 'bg', 't'], ['ic', 'icon', 't'], ['bc2', 'bg2', 't'],
-  ['anim', 'animTitle', 'c'], ['swap', 'swap', 'c'], ['vc', 'volCtl', 'c']
+  ['anim', 'animTitle', 'c'], ['swap', 'swap', 'c'], ['vc', 'volCtl', 'c'],
+  ['fb', 'fb', 'n'], ['fc', 'fc', 'n'], ['fs', 'fs', 'n'], ['fh', 'fh', 'n'], ['fbl', 'fbl', 'n'], ['fg', 'fg', 'n'], ['fse', 'fse', 'n'], ['fi', 'fi', 'n'],
+  ['tintc', 'tint', 't'], ['tintAmt', 'tintAmt', 'n'], ['tintBlend', 'tintBlend', 't'],
+  ['zoom', 'zoom', 'n'], ['px', 'px', 'n'], ['py', 'py', 'n'], ['speed', 'speed', 'n'], ['rot', 'rot', 'n'], ['fit', 'fit', 't'],
+  ['flipH', 'flipH', 'c'], ['flipV', 'flipV', 'c'], ['trimS', 'trimS', 'n'], ['trimE', 'trimE', 'n']
 ];
+const SL = {
+  fxcolor: [['fb', 'Độ sáng', 0, 200, 5, '%'], ['fc', 'Tương phản', 0, 200, 5, '%'], ['fs', 'Bão hòa màu', 0, 300, 5, '%'], ['fh', 'Sắc độ (xoay màu)', 0, 360, 5, '°'],
+    ['fbl', 'Làm mờ video', 0, 20, 0.5, 'px'], ['fg', 'Trắng đen', 0, 100, 5, '%'], ['fse', 'Nâu cổ điển (sepia)', 0, 100, 5, '%'], ['fi', 'Đảo màu', 0, 100, 5, '%']],
+  fxtint: [['tintAmt', 'Độ đậm màu phủ', 0, 100, 5, '%']],
+  fxmove: [['zoom', 'Phóng to', 100, 300, 5, '%'], ['px', 'Dịch ngang', -50, 50, 1, '%'], ['py', 'Dịch dọc', -50, 50, 1, '%'], ['speed', 'Tốc độ phát', 0.25, 3, 0.05, 'x']]
+};
+Object.keys(SL).forEach(cid => {
+  $(cid).innerHTML = SL[cid].map(s => '<label class="fld"><span>' + s[1] + ': <b id="' + s[0] + '_v"></b></span><input type="range" id="' + s[0] + '" min="' + s[2] + '" max="' + s[3] + '" step="' + s[4] + '"></label>').join('');
+});
+const FXDEF = { fb: 100, fc: 100, fs: 100, fh: 0, fbl: 0, fg: 0, fse: 0, fi: 0, tint: '#4da3ff', tintAmt: 0, tintBlend: 'overlay' };
+const FXRESET = Object.assign({}, FXDEF, { speed: 1, flipH: false, flipV: false, rot: 0, zoom: 100, px: 0, py: 0, fit: 'cover', trimS: 0, trimE: 0 });
+const PRESETS = {
+  'Gốc': {},
+  'Điện ảnh': { fc: 115, fs: 90, fb: 95, tint: '#ff9a3c', tintAmt: 12, tintBlend: 'soft-light' },
+  'Đen trắng': { fg: 100, fc: 110 },
+  'Phim cũ': { fse: 60, fc: 90, fb: 105, fs: 80 },
+  'Lạnh': { fs: 105, tint: '#4da3ff', tintAmt: 25, tintBlend: 'soft-light' },
+  'Ấm': { fs: 110, tint: '#ff9a3c', tintAmt: 25, tintBlend: 'soft-light' },
+  'Rực rỡ': { fs: 150, fc: 110, fb: 105 },
+  'Mờ ảo': { fbl: 2, fb: 110, fs: 120, fc: 90 },
+  'Cyberpunk': { fs: 160, fc: 115, tint: '#ff00aa', tintAmt: 22, tintBlend: 'overlay' },
+  'Đêm': { fb: 80, fc: 120, fs: 90, tint: '#1a2a6c', tintAmt: 35, tintBlend: 'multiply' }
+};
+Object.keys(PRESETS).forEach(name => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
+  b.onclick = () => { $('fxresetsw').checked = false; $('fxresetsw').snap = null; Object.assign(C, FXDEF, PRESETS[name]); fill(); read(); };
+  $('presets').append(b);
+});
+$('fxresetsw').onchange = e => {
+  const sw = e.target;
+  if (sw.checked) { sw.snap = {}; Object.keys(FXRESET).forEach(k => sw.snap[k] = C[k]); Object.assign(C, FXRESET); }
+  else if (sw.snap) { Object.assign(C, sw.snap); sw.snap = null; }
+  fill(); read();
+};
+$('getS').onclick = () => { $('trimS').value = pv.currentTime.toFixed(1); read(); };
+$('getE').onclick = () => { $('trimE').value = pv.currentTime.toFixed(1); read(); };
+
+function fxApply(el) {
+  const p = el.parentElement, W = p.clientWidth || 1, H = p.clientHeight || 1;
+  const odd = (+C.rot / 90) % 2 !== 0, k = (C.zoom / 100) * (odd ? Math.max(W / H, H / W) : 1);
+  const neutral = C.fb == 100 && C.fc == 100 && C.fs == 100 && C.fh == 0 && C.fbl == 0 && C.fg == 0 && C.fse == 0 && C.fi == 0;
+  el.style.filter = neutral ? 'none' : 'brightness(' + C.fb + '%) contrast(' + C.fc + '%) saturate(' + C.fs + '%) hue-rotate(' + C.fh + 'deg) blur(' + C.fbl + 'px) grayscale(' + C.fg + '%) sepia(' + C.fse + '%) invert(' + C.fi + '%)';
+  el.style.transform = 'translate(' + C.px + '%,' + C.py + '%) rotate(' + C.rot + 'deg) scale(' + (C.flipH ? -k : k) + ',' + (C.flipV ? -k : k) + ')';
+  el.style.objectFit = C.fit;
+}
+function tintApply(el) { el.style.background = C.tint; el.style.opacity = C.tintAmt / 100; el.style.mixBlendMode = C.tintBlend; }
+function pvSize() {
+  const b = $('pvbox'), r = innerWidth / innerHeight, avail = $('pvwrap').clientWidth || 600;
+  const w = Math.min(avail, Math.min(innerHeight * 0.4, 360) * r);
+  b.style.width = w + 'px'; b.style.height = (w / r) + 'px';
+}
+addEventListener('resize', () => { if (!$('adminPage').hidden) { pvSize(); fxApply(pv); } fxApply(v); });
+setInterval(() => {
+  if (!hasVideo || (v.paused && !v.ended)) return;
+  const s = +C.trimS || 0, e = +C.trimE || 0;
+  if (!(s > 0 || e > 0)) return;
+  if (v.currentTime < s - 0.3) v.currentTime = s;
+  if ((e > 0 && v.currentTime >= e) || v.ended) {
+    if (C.loop) { v.currentTime = s; v.play().catch(() => {}); } else v.pause();
+  }
+}, 100);
+
+/* ---------- bảng điều khiển: thanh bên, tab, liên kết mạng xã hội ---------- */
+const TABS = [ // [id, tên, biểu tượng, từ khóa tìm kiếm]
+  ['video', 'Video', '<path d="M5 4l14 8-14 8z"/>', 'video clip địa chỉ âm lượng lặp lại độ tối'],
+  ['fx', 'ADMIN', '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>', 'chỉnh video lọc màu phủ màu xoay lật cắt tốc độ phóng to capcut'],
+  ['links', 'Liên kết', '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>', 'mạng xã hội facebook tiktok youtube instagram discord telegram'],
+  ['profile', 'Tùy chỉnh chung', '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', 'hồ sơ thẻ tên mô tả vị trí hiệu ứng tuyết viền tối'],
+  ['color', 'Màu sắc', '<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="15.5" cy="10" r="1"/>', 'màu nhấn chữ nền thẻ chuyển màu'],
+  ['other', 'Khác', '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>', 'tiêu đề động tab thanh âm lượng đổi màu hộp'],
+  ['config', 'Cấu hình', '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>', 'lưu sao chép cấu hình dán file hướng dẫn']
+];
+let curTab = 'video';
+try { curTab = sessionStorage.getItem('tab') || 'video'; } catch (e) {}
+if (!TABS.some(t => t[0] === curTab)) curTab = 'video';
+function openTab(id) {
+  curTab = id;
+  document.querySelectorAll('.sec').forEach(x => x.classList.toggle('on', x.dataset.sec === id));
+  document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x.dataset.tab === id));
+  if (id === 'fx') { pvSize(); fxApply(pv); pv.play().catch(() => {}); } else pv.pause();
+  try { sessionStorage.setItem('tab', id); } catch (e) {}
+  document.querySelector('.dash>main').scrollTop = 0;
+}
+TABS.forEach(t => {
+  const b = document.createElement('button'); b.type = 'button'; b.dataset.tab = t[0];
+  b.innerHTML = '<svg viewBox="0 0 24 24">' + t[2] + '</svg><span></span>';
+  b.lastChild.textContent = t[1];
+  b.onclick = () => openTab(t[0]);
+  $('nav').append(b);
+});
+const norm = x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+$('navq').oninput = e => {
+  const q = norm(e.target.value.trim());
+  TABS.forEach(t => { $('nav').querySelector('[data-tab="' + t[0] + '"]').hidden = !!q && !norm(t[1] + ' ' + t[3]).includes(q); });
+};
+$('navq').onkeydown = e => {
+  if (e.key !== 'Enter') return;
+  const f = [...$('nav').children].find(x => !x.hidden);
+  if (f) { f.click(); e.target.blur(); }
+};
+addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
+});
+$('save2').onclick = () => $('save').click();
+$('logout2').onclick = () => $('logout').click();
+
+let toastT = 0;
+function toast(msg, bad) {
+  if (!msg) return;
+  const t = $('toast'); t.textContent = msg; t.className = bad ? 'err' : ''; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3500);
+}
+new MutationObserver(() => toast($('saved').textContent, $('saved').classList.contains('err'))).observe($('saved'), { childList: true, characterData: true, subtree: true });
+
+/* Liên kết mạng xã hội: danh sách dòng "Tên | địa chỉ" vẫn lưu trong ô văn bản #lk như cũ */
+const PLATFORMS = [ // [tên, màu nền, ký hiệu, địa chỉ mở đầu, màu chữ]
+  ['Facebook', '#1877f2', 'f', 'https://facebook.com/'], ['Instagram', '#e1306c', 'IG', 'https://instagram.com/'],
+  ['TikTok', '#111111', 'TT', 'https://tiktok.com/@'], ['YouTube', '#ff0000', '▶', 'https://youtube.com/@'],
+  ['Discord', '#5865f2', 'DC', 'https://discord.gg/'], ['Telegram', '#2aabee', 'TG', 'https://t.me/'],
+  ['GitHub', '#24292f', 'GH', 'https://github.com/'], ['Spotify', '#1db954', 'SP', 'https://open.spotify.com/user/'],
+  ['X', '#000000', 'X', 'https://x.com/'], ['Threads', '#101010', '@', 'https://threads.net/@'],
+  ['Twitch', '#9146ff', 'Tw', 'https://twitch.tv/'], ['Reddit', '#ff4500', 'Rd', 'https://reddit.com/user/'],
+  ['Pinterest', '#e60023', 'P', 'https://pinterest.com/'], ['LinkedIn', '#0a66c2', 'in', 'https://linkedin.com/in/'],
+  ['Steam', '#1b2838', 'St', 'https://steamcommunity.com/id/'], ['Snapchat', '#fffc00', 'Sn', 'https://snapchat.com/add/', '#111'],
+  ['Zalo', '#0068ff', 'Z', 'https://zalo.me/'], ['Email', '#6b7280', '✉', 'mailto:']
+];
+PLATFORMS.forEach(p => {
+  const b = document.createElement('button'); b.type = 'button'; b.title = p[0]; b.textContent = p[2]; b.style.background = p[1];
+  if (p[4]) b.style.color = p[4];
+  b.onclick = () => addRow(p[0], p[3], true);
+  $('plat').append(b);
+});
+const cb = document.createElement('button'); cb.type = 'button'; cb.className = 'wide'; cb.textContent = '+ URL tùy chỉnh';
+cb.onclick = () => addRow('', 'https://', true);
+$('plat').append(cb);
+
+function linkLines() {
+  return [...document.querySelectorAll('#linkrows .lrow')].map(r => {
+    const n = r.querySelector('.ln').value.trim(), u = r.querySelector('.lu').value.trim();
+    return n || u ? n + ' | ' + u : '';
+  }).filter(Boolean).join('\n');
+}
+function linkEmpty() { $('linkempty').hidden = $('linkrows').children.length > 0; }
+function addRow(name, url, focusIt) {
+  const r = document.createElement('div'); r.className = 'lrow';
+  r.innerHTML = '<input type="text" class="ln" placeholder="Tên hiển thị"><input type="text" class="lu" placeholder="https://...">' +
+    '<button type="button" class="ib" data-a="up" title="Lên">↑</button><button type="button" class="ib" data-a="down" title="Xuống">↓</button><button type="button" class="ib" data-a="del" title="Xóa">✕</button>';
+  r.querySelector('.ln').value = name; r.querySelector('.lu').value = url;
+  r.addEventListener('input', () => { $('lk').value = linkLines(); });
+  r.addEventListener('click', e => {
+    const a = e.target.dataset && e.target.dataset.a; if (!a) return;
+    if (a === 'del') r.remove();
+    else if (a === 'up' && r.previousElementSibling) r.parentNode.insertBefore(r, r.previousElementSibling);
+    else if (a === 'down' && r.nextElementSibling) r.parentNode.insertBefore(r.nextElementSibling, r);
+    $('lk').value = linkLines(); linkEmpty(); read();
+  });
+  $('linkrows').append(r);
+  linkEmpty();
+  if (focusIt) {
+    const n = r.querySelector('.ln'), u = r.querySelector('.lu');
+    if (!name) n.focus(); else { u.focus(); u.setSelectionRange(u.value.length, u.value.length); }
+    $('lk').value = linkLines(); read();
+  }
+}
+function renderLinks(text) {
+  $('linkrows').innerHTML = '';
+  String(text == null ? C.links : text).split('\n').forEach(line => {
+    if (!line.trim()) return;
+    const i = line.indexOf('|');
+    addRow((i < 0 ? line : line.slice(0, i)).trim(), i < 0 ? '' : line.slice(i + 1).trim(), false);
+  });
+  linkEmpty();
+}
+$('lk').addEventListener('input', () => renderLinks($('lk').value));
+
 function setGradUI() {
-  $('gradbtn').classList.toggle('on', C.grad);
-  $('gradbtn').textContent = C.grad ? 'Tắt nền thẻ chuyển màu' : 'Bật nền thẻ chuyển màu';
+  $('gradsw').checked = !!C.grad;
   $('bc2w').hidden = !C.grad;
 }
 function fill() {
   F.forEach(([id, k, t]) => { const e = $(id); if (t === 'c') e.checked = !!C[k]; else e.value = C[k] == null ? '' : C[k]; });
-  setGradUI(); labels();
+  setGradUI(); labels(); renderLinks();
 }
 function labels() {
   $('volv').textContent = Math.round(C.volume * 100) + '%';
   $('darkv').textContent = C.darkness + '%'; $('opv').textContent = C.opacity + '%'; $('blv').textContent = C.blur + 'px';
-  ['ac', 'tc', 'bc', 'ic', 'bc2'].forEach(k => $(k + 'v').textContent = $(k).value);
+  ['ac', 'tc', 'bc', 'ic', 'bc2', 'tintc'].forEach(k => $(k + 'v').textContent = $(k).value);
+  Object.values(SL).flat().forEach(s => { $(s[0] + '_v').textContent = $(s[0]).value + s[5]; });
 }
-function out() {
-  const o = Object.assign({}, C);
-  $('cfgout').value = 'const CONFIG = ' + JSON.stringify(o, null, 2) + ';';
-}
+function out() { $('cfgout').value = 'const CONFIG = ' + JSON.stringify(Object.assign({}, C), null, 2) + ';'; }
 function read() {
   F.forEach(([id, k, t]) => { const e = $(id); C[k] = t === 'c' ? e.checked : t === 'n' ? +e.value : e.value; });
   level = C.volume; if (gain) gain.gain.value = level; else v.volume = Math.min(1, level);
@@ -397,7 +660,6 @@ function read() {
 const panel = document.querySelector('#adminPage main');
 panel.addEventListener('input', e => { if (e.target.id !== 'vurl' && e.target.id !== 'fv') read(); });
 panel.addEventListener('change', e => { if (e.target.id !== 'fv' && e.target.id !== 'vurl') read(); });
-
 $('vurl').onchange = () => { read(); if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; } loadVideo(C.videoUrl, false); };
 $('fv').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
@@ -405,7 +667,8 @@ $('fv').onchange = e => {
   blobUrl = URL.createObjectURL(f);
   loadVideo(blobUrl, true);
 };
-$('gradbtn').onclick = () => { C.grad = !C.grad; setGradUI(); read(); };
+$('gradsw').onchange = e => { C.grad = e.target.checked; setGradUI(); read(); };
+panel.addEventListener('input', e => { const sw = $('fxresetsw'); if (sw.checked && e.target !== sw) { sw.checked = false; sw.snap = null; } });
 $('copy').onclick = async () => {
   const t = $('cfgout').value;
   try { await navigator.clipboard.writeText(t); }
@@ -434,6 +697,9 @@ function showAdmin(u) {
   $('adminMain').hidden = !ok;
   $('loginBox').hidden = ok;
   $('logout').hidden = !(FB_ON && ok);
+  $('uname').textContent = u && u.email ? u.email : 'Chế độ thử trên máy';
+  $('av').textContent = ((u && u.email) || 'T')[0].toUpperCase();
+  $('logout2').hidden = $('logout').hidden;
   if (u && !ok) { $('lmsg').textContent = 'Tài khoản ' + u.email + ' không có quyền quản trị.'; $('lmsg').className = 'note err'; fbMod.signOut(fbAuth); }
 }
 async function initAuth() {
@@ -477,7 +743,7 @@ $('save').onclick = async () => {
   $('save').disabled = false;
 };
 
-/* ---------- khởi động ---------- */
+
 (async () => {
   $('hint').textContent = 'Đang tải...';
   await loadRemote();
