@@ -300,7 +300,6 @@ details textarea{margin-top:8px}
 </div>
 
 <script>
-location.hash = '#admin';
 // ===BAT DAU CAU HINH=== (đoạn này nằm giữa hai dòng đánh dấu, có thể thay bằng cấu hình sao chép từ trang #admin)
 const CONFIG = {
   "videoUrl": "video.mp4", "volume": 2, "darkness": 25, "loop": true, "show": false, "name": "hoangphuoc", "desc": "", "loc": "",
@@ -314,8 +313,8 @@ const CONFIG = {
 // ===KET THUC CAU HINH===
 
 // ===CAU HINH FIREBASE=== (điền sau khi tạo project Firebase; để nguyên XXX thì trang chạy ở chế độ thử trên máy)
-const FIREBASE = { apiKey: 'XXX', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
-const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';   // chỉ email này được lưu cấu hình
+const FIREBASE = { apiKey: 'AIzaSyA8OpJVYEZapzGl4EjZQeOPfwsxFILa-gI', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
+const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';
 // ===KET THUC CAU HINH FIREBASE===
 const FB_ON = FIREBASE.apiKey !== 'XXX';
 const DOC = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE.projectId + '/databases/(default)/documents/site/config';
