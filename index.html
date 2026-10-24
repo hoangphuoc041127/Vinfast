@@ -119,9 +119,10 @@ kbd{font-size:11px;border:1px solid #2a2e38;border-radius:6px;padding:3px 6px;co
 .lrow .lu{flex:3 1 220px;width:auto}
 details summary{cursor:pointer;color:var(--mute);font-size:13px}
 details textarea{margin-top:8px}
+.ver{font-size:11px;color:var(--mute);word-break:break-all;text-align:center}
 #toast{position:fixed;right:16px;bottom:16px;z-index:50;background:#1b1d24;border:1px solid #2f7a42;border-radius:10px;padding:10px 14px;max-width:min(360px,calc(100% - 32px));font-size:14px}
 #toast.err{border-color:#7b1e25;color:var(--bad)}
-@media(max-width:860px){.dash{grid-template-columns:68px minmax(0,1fr)}.side{padding:12px 8px;align-items:center}.brand b,.srch,#nav button span,.helpbox,.un{display:none}.brand{justify-content:center}#nav{justify-items:center}#nav button{padding:12px;justify-content:center}.sidefoot{width:100%}.sharebtn{font-size:11px;padding:10px 2px}.userbox{flex-direction:column;padding:8px 4px;gap:6px}.dash>main{padding:18px 14px 48px}}
+@media(max-width:860px){.dash{grid-template-columns:68px minmax(0,1fr)}.side{padding:12px 8px;align-items:center}.brand b,.srch,#nav button span,.helpbox,.un,.ver{display:none}.brand{justify-content:center}#nav{justify-items:center}#nav button{padding:12px;justify-content:center}.sidefoot{width:100%}.sharebtn{font-size:11px;padding:10px 2px}.userbox{flex-direction:column;padding:8px 4px;gap:6px}.dash>main{padding:18px 14px 48px}}
 </style>
 </head>
 <body>
@@ -166,6 +167,7 @@ details textarea{margin-top:8px}
         <div class="helpbox"><span>Xem trang của bạn</span><a class="sidebtn" href="#">Xem trang</a></div>
         <button class="sharebtn" id="save2" type="button">Lưu lên web</button>
         <div class="userbox"><span class="av" id="av">T</span><span class="un" id="uname"></span><button class="ib" id="logout2" type="button" title="Đăng xuất" hidden>&#x238B;</button></div>
+        <div class="ver" id="ver"></div>
       </div>
     </aside>
     <main>
@@ -314,7 +316,7 @@ const CONFIG = {
 
 // ===CAU HINH FIREBASE=== (điền sau khi tạo project Firebase; để nguyên XXX thì trang chạy ở chế độ thử trên máy)
 const FIREBASE = { apiKey: 'AIzaSyA8OpJVYEZapzGl4EjZQeOPfwsxFILa-gI', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
-const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';
+const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';   // chỉ email này được lưu cấu hình
 // ===KET THUC CAU HINH FIREBASE===
 const FB_ON = FIREBASE.apiKey !== 'XXX';
 const DOC = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE.projectId + '/databases/(default)/documents/site/config';
@@ -563,6 +565,7 @@ $('navq').onkeydown = e => {
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
 });
+$('ver').textContent = 'Bản 24/10-v3 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
 $('save2').onclick = () => $('save').click();
 $('logout2').onclick = () => $('logout').click();
 
