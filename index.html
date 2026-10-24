@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>hoangphuoc</title>
+<style>
+:root{--fg:#f3f5f8;--mute:#aab1be;--acc:#9b6bff;--line:rgba(255,255,255,.14);--bad:#ff7b7b;--card:#131519;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+[hidden]{display:none!important}
+
+/* ===== Trang phát video ===== */
+#view{position:fixed;inset:0;background:#000;overflow:hidden}
+#bg{position:absolute;inset:0;background:linear-gradient(120deg,#10151f,#1b2440,#2a1f3d,#10151f);background-size:300% 300%;animation:drift 18s ease infinite}
+@keyframes drift{50%{background-position:100% 50%}}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#bg,.rb{animation:none!important}}
+#v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+#shade{position:absolute;inset:0;background:#000;opacity:.25;pointer-events:none}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75))}
+#snow{position:absolute;inset:0;pointer-events:none}
+#start{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#07090d;cursor:pointer;text-align:center;padding:24px}
+#start b{font-size:clamp(22px,4vw,34px);font-weight:600}
+#start span{color:var(--mute);max-width:44ch}
+#card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,calc(100% - 32px));border:1px solid var(--line);border-radius:18px;padding:28px 24px;text-align:center;display:grid;gap:10px;justify-items:center}
+#cn{font-size:26px;font-weight:600;letter-spacing:-.01em;min-height:1.3em}
+.rb{background:linear-gradient(90deg,#ff5f6d,#ffc371,#47e891,#4da3ff,#9b6bff);-webkit-background-clip:text;background-clip:text;color:transparent;animation:hue 6s linear infinite}
+#cd{opacity:.8;max-width:30ch}
+#cl{opacity:.65;font-size:14px}
+#links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+#links a{border:1px solid;border-radius:999px;padding:6px 14px;text-decoration:none;font-size:14px}
+#vcw{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;display:flex;align-items:center;gap:8px;background:rgba(16,18,24,.55);border:1px solid var(--line);border-radius:10px;padding:8px 12px;backdrop-filter:blur(10px)}
+#vcw input{width:120px;accent-color:var(--acc)}
+
+/* ===== Trang chỉnh cấu hình (#admin) ===== */
+#adminPage{position:fixed;inset:0;overflow:auto;background:#0a0a0b;padding:calc(24px + env(safe-area-inset-top,0px)) 16px 48px}
+main{max-width:920px;margin:0 auto;display:grid;gap:16px}
+h1{font-size:26px;font-weight:600}
+h2{font-size:22px;font-weight:600;margin-top:10px}
+.card{background:var(--card);border:1px solid #1d2026;border-radius:14px;padding:20px;display:grid;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.fld{display:grid;gap:7px;font-size:14px;align-content:start}
+.fld>span{font-weight:500}
+.note{font-size:13px;color:var(--mute)}
+.err{color:var(--bad)}
+input[type=text],textarea,select{background:#0b0c0e;color:var(--fg);border:1px solid #23262d;border-radius:8px;padding:10px 12px;font:inherit;width:100%}
+textarea{resize:vertical;min-height:70px}
+input[type=file]{color:var(--mute);font-size:13px;width:100%}
+input[type=range]{accent-color:var(--acc);width:100%}
+.col{display:flex;align-items:center;gap:10px;background:#0b0c0e;border:1px solid #23262d;border-radius:8px;padding:6px 10px}
+.col input{width:30px;height:30px;border:0;padding:0;background:none;cursor:pointer}
+.col code{font-family:inherit}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#0b0c0e;border:1px solid #23262d;border-radius:8px;padding:9px 14px;cursor:pointer}
+.chip:has(input:checked){border-color:var(--acc);background:#1c1530}
+.chip input{accent-color:var(--acc)}
+.sw{position:relative;width:46px;height:26px;display:inline-block}
+.sw input{opacity:0;position:absolute;inset:0;margin:0;cursor:pointer;z-index:1;width:100%;height:100%}
+.sw i{position:absolute;inset:0;background:#3a3f4b;border-radius:13px;transition:.2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--acc)}
+.sw input:checked+i::after{transform:translateX(20px)}
+.gradbtn{background:#3a1114;color:#ffd9dc;border:1px solid #7b1e25;border-radius:8px;padding:14px;font:inherit;cursor:pointer;width:100%}
+.gradbtn.on{background:#1c3a22;border-color:#2f7a42;color:#d9ffe3}
+.btn{background:#fff;color:#111;border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer;justify-self:start;text-decoration:none;display:inline-block}
+a{color:#b99bff}
+#cfgout{font-family:ui-monospace,Consolas,monospace;font-size:12px;min-height:220px;white-space:pre}
+ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
+#loginBox{width:min(400px,100%);margin:12vh auto 0;justify-items:center;text-align:center;padding:38px 28px 28px;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+#loginBox h1{font-size:22px}
+.lock{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#4da3ff,#9b6bff);display:grid;place-items:center;margin-bottom:6px}
+.lock svg{width:30px;height:30px;fill:#fff}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:8px;background:#fff;color:#1f1f1f;border:0;border-radius:10px;padding:13px 16px;font:inherit;font-weight:600;cursor:pointer}
+.gbtn:hover{background:#eef0f2}
+.gbtn svg{width:20px;height:20px;flex:none}
+</style>
+</head>
+<body>
+
+<!-- ================= TRANG PHÁT VIDEO (mọi người thấy) ================= -->
+<div id="view">
+  <div id="bg"></div>
+  <video id="v" playsinline></video>
+  <div id="shade"></div>
+  <div id="vig" hidden></div>
+  <canvas id="snow" hidden></canvas>
+
+  <div id="card" hidden>
+    <div id="cn"></div>
+    <div id="cd"></div>
+    <div id="cl"></div>
+    <div id="links"></div>
+  </div>
+
+  <div id="vcw" hidden><span class="note" style="color:inherit">Âm lượng</span><input type="range" id="vcr" min="0" max="2" step="0.05" aria-label="Âm lượng"></div>
+
+  <div id="start" role="button" tabindex="0">
+    <b>Bấm để vào</b>
+    <span id="hint"></span>
+  </div>
+</div>
+
+<!-- ================= TRANG CHỈNH CẤU HÌNH (thêm #admin vào cuối địa chỉ) ================= -->
+<div id="adminPage" hidden>
+  <div class="card" id="loginBox" hidden>
+    <div class="lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+    <h1>Đăng nhập quản trị</h1>
+    <p class="note">Chỉ chủ trang mới xem và đổi được cài đặt.</p>
+    <button class="gbtn" id="login" type="button">
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <span>Đăng nhập bằng Google</span>
+    </button>
+    <p class="note" id="lmsg"></p>
+  </div>
+  <main id="adminMain" hidden>
+    <h1>Chỉnh cấu hình trang</h1>
+    <div class="card">
+      <ol>
+        <li>Chỉnh các mục bên dưới.</li>
+        <li>Kéo xuống cuối trang, bấm <b>Lưu lên web</b>. Mọi người tải lại trang sẽ thấy cấu hình mới.</li>
+        <li>Chưa cấu hình Firebase (chế độ thử trên máy): bấm <b>Sao chép cấu hình</b> rồi dán vào Notepad++ thay đoạn <b>const CONFIG</b> ở đầu phần script.</li>
+      </ol>
+    </div>
+
+    <h2>Video</h2>
+    <div class="card">
+      <div class="grid">
+        <label class="fld"><span>Địa chỉ video (tên file cạnh index.html, hoặc link R2)</span><input type="text" id="vurl" placeholder="video.mp4"></label>
+        <label class="fld"><span>Xem thử nhanh với file trong máy (không lưu vào cấu hình)</span><input type="file" id="fv" accept="video/*"></label>
+        <label class="fld"><span>Âm lượng: <b id="volv">200%</b></span><input type="range" id="vol" min="0" max="2" step="0.05"></label>
+        <label class="fld"><span>Độ tối của nền: <b id="darkv">25%</b></span><input type="range" id="dark" min="0" max="80" step="5"></label>
+      </div>
+      <label class="chip" style="justify-self:start"><input type="checkbox" id="loop"> Lặp lại video</label>
+      <p class="note" id="msg"></p>
+    </div>
+
+    <h2>Tùy chỉnh chung</h2>
+    <div class="card">
+      <div class="fld" style="display:flex;align-items:center;gap:12px"><span class="sw"><input type="checkbox" id="showcard"><i></i></span><span>Hiện thẻ hồ sơ trên trang phát (mặc định tắt)</span></div>
+      <div class="grid">
+        <label class="fld"><span>Tên hiển thị</span><input type="text" id="nm"></label>
+        <label class="fld"><span>Mô tả</span><input type="text" id="ds" placeholder="Đây là mô tả của tôi"></label>
+        <label class="fld"><span>Vị trí</span><input type="text" id="loc" placeholder="Vị trí của bạn"></label>
+        <label class="fld"><span>Hiệu ứng nền</span>
+          <select id="bgfx"><option value="none">Không có</option><option value="vig">Viền tối</option><option value="snow">Tuyết rơi</option></select></label>
+        <label class="fld"><span>Hiệu ứng tên</span>
+          <select id="nfx"><option value="none">Không có</option><option value="rainbow">Cầu vồng</option><option value="typing">Gõ chữ</option></select></label>
+        <label class="fld"><span>Độ trong suốt thẻ: <b id="opv">60%</b></span><input type="range" id="op" min="0" max="100" step="5"></label>
+        <label class="fld"><span>Độ mờ thẻ: <b id="blv">10px</b></span><input type="range" id="bl" min="0" max="80" step="2"></label>
+        <div class="fld"><span>Phát sáng</span>
+          <div class="chips"><label class="chip"><input type="checkbox" id="gn"> Tên</label><label class="chip"><input type="checkbox" id="gs"> Liên kết</label></div></div>
+      </div>
+      <label class="fld"><span>Liên kết (mỗi dòng một liên kết, dạng: Tên | https://...)</span><textarea id="lk" placeholder="Facebook | https://facebook.com/..."></textarea></label>
+    </div>
+
+    <h2>Màu sắc</h2>
+    <div class="card">
+      <div class="grid">
+        <div class="fld"><span>Màu nhấn</span><label class="col"><input type="color" id="ac"><code id="acv"></code></label></div>
+        <div class="fld"><span>Màu chữ</span><label class="col"><input type="color" id="tc"><code id="tcv"></code></label></div>
+        <div class="fld"><span>Màu nền thẻ</span><label class="col"><input type="color" id="bc"><code id="bcv"></code></label></div>
+        <div class="fld"><span>Màu biểu tượng / liên kết</span><label class="col"><input type="color" id="ic"><code id="icv"></code></label></div>
+        <div class="fld" id="bc2w" hidden><span>Màu nền thứ hai (chuyển màu)</span><label class="col"><input type="color" id="bc2"><code id="bc2v"></code></label></div>
+      </div>
+      <button class="gradbtn" id="gradbtn" type="button">Bật nền thẻ chuyển màu</button>
+    </div>
+
+    <h2>Khác</h2>
+    <div class="card">
+      <div class="grid">
+        <div class="fld"><span>Tiêu đề động (tên trên tab trình duyệt)</span><span class="sw"><input type="checkbox" id="anim"><i></i></span></div>
+        <div class="fld"><span>Đổi màu hộp (hoán đổi nền và chữ của thẻ)</span><span class="sw"><input type="checkbox" id="swap"><i></i></span></div>
+        <div class="fld"><span>Thanh âm lượng cho người xem</span><span class="sw"><input type="checkbox" id="vc"><i></i></span></div>
+      </div>
+    </div>
+
+    <h2>Cấu hình để dán vào file</h2>
+    <div class="card">
+      <textarea id="cfgout" readonly spellcheck="false"></textarea>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="save" type="button">Lưu lên web</button>
+        <button class="btn" id="copy" type="button" style="background:#2a2e38;color:#fff">Sao chép cấu hình</button>
+        <a href="#admin" id="logout" hidden>Đăng xuất</a>
+        <span class="note" id="saved"></span>
+        <a class="btn" href="#">Lưu và xem trang</a>
+        <span class="note" id="copied"></span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ===BAT DAU CAU HINH=== (đoạn này nằm giữa hai dòng đánh dấu, có thể thay bằng cấu hình sao chép từ trang #admin)
+const CONFIG = {
+  // Địa chỉ video: khi test đặt file video.mp4 cạnh index.html. Khi đưa lên web, đổi thành link R2, ví dụ https://pub-xxxx.r2.dev/video.mp4
+  "videoUrl": "video.mp4",
+  "volume": 2,
+  "darkness": 25,
+  "loop": true,
+  "show": false,
+  "name": "hoangphuoc",
+  "desc": "",
+  "loc": "",
+  "bgfx": "none",
+  "nfx": "none",
+  "opacity": 60,
+  "blur": 10,
+  "glowName": false,
+  "glowLinks": false,
+  "links": "",
+  "accent": "#9b6bff",
+  "text": "#f3f5f8",
+  "bg": "#10121a",
+  "icon": "#f3f5f8",
+  "grad": false,
+  "bg2": "#2a1f4d",
+  "animTitle": false,
+  "swap": false,
+  "volCtl": false,
+  "adminEnabled": true
+};
+// ===KET THUC CAU HINH===
+
+// ===CAU HINH FIREBASE=== (điền sau khi tạo project Firebase; để nguyên XXX thì trang chạy ở chế độ thử trên máy)
+const FIREBASE = { apiKey: 'AIzaSyA8OpJVYEZapzGl4EjZQeOPfwsxFILa-gI', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
+const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';   // chỉ email này được lưu cấu hình
+// ===KET THUC CAU HINH FIREBASE===
+const FB_ON = FIREBASE.apiKey !== 'XXX';
+const DOC = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE.projectId + '/databases/(default)/documents/site/config';
+
+const $ = id => document.getElementById(id), v = $('v');
+const C = Object.assign({}, CONFIG);
+let ac = null, gain = null, level = C.volume, noBoost = false, entered = false, hasVideo = false, curSrc = '', blobUrl = null;
+
+/* ---------- chuyển trang: (trống) = phát video, #admin = chỉnh cấu hình ---------- */
+function route() {
+  const admin = C.adminEnabled && location.hash === '#admin';
+  $('adminPage').hidden = !admin;
+  $('view').hidden = admin;
+  if (admin) v.pause(); else if (entered && hasVideo) v.play().catch(() => {});
+}
+addEventListener('hashchange', route);
+
+/* ---------- nạp video ---------- */
+function loadVideo(src, isBlob) {
+  curSrc = src; hasVideo = !!src;
+  v.removeAttribute('crossorigin');
+  if (!src) { v.removeAttribute('src'); v.style.display = 'none'; $('bg').style.display = ''; $('hint').textContent = 'Chưa có video. Hãy đặt địa chỉ video trong cấu hình.'; return; }
+  v.style.display = 'block'; $('bg').style.display = 'none';
+  // Tăng âm lượng trên 100% cần Web Audio; file mở thẳng từ ổ đĩa (file://) thì trình duyệt không cho phép
+  noBoost = location.protocol === 'file:' && !isBlob;
+  if (!isBlob && /^https?:/i.test(src) && new URL(src, location.href).origin !== location.origin) v.crossOrigin = 'anonymous';
+  v.src = src; v.load();
+  $('hint').textContent = '';
+}
+v.onerror = () => {
+  if (v.crossOrigin && !ac) {            // máy chủ chưa bật CORS: phát bình thường, không tăng âm
+    v.removeAttribute('crossorigin'); noBoost = true; v.src = curSrc; v.load(); return;
+  }
+  $('hint').textContent = 'Không phát được video. Kiểm tra địa chỉ video hoặc định dạng (nên dùng MP4 H.264).';
+  $('msg').textContent = 'Không phát được video này.'; $('msg').className = 'note err';
+};
+v.onloadedmetadata = () => { $('msg').textContent = 'Video ' + v.videoWidth + '×' + v.videoHeight + ' phát nguyên bản, không bị nén.' + (noBoost ? ' (Mở file trực tiếp từ ổ đĩa nên chưa tăng được trên 100% âm lượng; khi đưa lên web sẽ tăng được.)' : ''); $('msg').className = 'note'; };
+
+/* ---------- âm thanh: tối đa 200%, có bộ giới hạn đỉnh để không rè ---------- */
+function setupAudio() {
+  if (ac || noBoost) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { noBoost = true; return; }
+    ac = new AC();
+    const src = ac.createMediaElementSource(v);
+    gain = ac.createGain(); gain.gain.value = level;
+    const lim = ac.createDynamicsCompressor();
+    lim.threshold.value = -10; lim.knee.value = 6; lim.ratio.value = 12; lim.attack.value = 0.003; lim.release.value = 0.2;
+    const out = ac.createGain(); out.gain.value = 0.9;
+    src.connect(gain); gain.connect(lim); lim.connect(out); out.connect(ac.destination);
+  } catch (e) { ac = null; gain = null; noBoost = true; }
+}
+function setLevel(x) {
+  level = x; C.volume = x;
+  if (gain) gain.gain.value = x; else v.volume = Math.min(1, x);
+  $('volv').textContent = Math.round(x * 100) + '%'; $('vol').value = x; $('vcr').value = x;
+}
+
+const enter = () => {
+  entered = true; $('start').hidden = true;
+  setupAudio(); if (ac && ac.state === 'suspended') ac.resume();
+  setLevel(level);
+  if (hasVideo) { v.muted = false; v.play().catch(() => { v.muted = true; v.play().catch(() => {}); }); }
+};
+$('start').onclick = enter;
+$('start').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') enter(); };
+$('vcr').oninput = e => setLevel(+e.target.value);
+
+/* ---------- hiệu ứng ---------- */
+const rgba = (h, a) => { const n = parseInt(h.slice(1), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; };
+
+let sraf = 0;
+function snow(on) {
+  cancelAnimationFrame(sraf);
+  const cv = $('snow'); cv.hidden = !on;
+  if (!on) return;
+  cv.width = innerWidth; cv.height = innerHeight;
+  const x = cv.getContext('2d');
+  const fl = Array.from({ length: 90 }, () => ({ x: Math.random() * cv.width, y: Math.random() * cv.height, r: 1 + Math.random() * 2.5, s: .4 + Math.random() * 1.2 }));
+  const f = () => {
+    x.clearRect(0, 0, cv.width, cv.height); x.fillStyle = 'rgba(255,255,255,.8)';
+    fl.forEach(p => { p.y += p.s; p.x += Math.sin(p.y / 40) * .4; if (p.y > cv.height) { p.y = -5; p.x = Math.random() * cv.width; } x.beginPath(); x.arc(p.x, p.y, p.r, 0, 7); x.fill(); });
+    sraf = requestAnimationFrame(f);
+  };
+  f();
+}
+let tn = 0, tt = 0, lastKey = '';
+function typeName(name, fx) {
+  clearInterval(tn);
+  const n = $('cn');
+  if (fx !== 'typing') { n.textContent = name; return; }
+  let i = 0; n.textContent = '';
+  tn = setInterval(() => { n.textContent = name.slice(0, ++i); if (i >= name.length) clearInterval(tn); }, 120);
+}
+function animTitle(name, on) {
+  clearInterval(tt);
+  if (!on) { document.title = name; return; }
+  let i = 0; const L = name.length;
+  tt = setInterval(() => { i = (i + 1) % (L * 2); const k = i <= L ? i : L * 2 - i; document.title = name.slice(0, Math.max(k, 1)) + '|'; }, 300);
+}
+
+/* ---------- áp dụng cấu hình lên trang phát video ---------- */
+function apply() {
+  const name = C.name || 'hoangphuoc', card = $('card'), op = C.opacity / 100;
+  card.hidden = !C.show;
+  const bg = C.swap ? C.text : C.bg, tx = C.swap ? C.bg : C.text;
+  card.style.background = C.grad ? 'linear-gradient(135deg,' + rgba(bg, op) + ',' + rgba(C.bg2, op) + ')' : rgba(bg, op);
+  card.style.color = tx;
+  card.style.borderColor = rgba(C.accent, .55);
+  card.style.backdropFilter = card.style.webkitBackdropFilter = 'blur(' + C.blur + 'px)';
+  const n = $('cn');
+  n.className = C.nfx === 'rainbow' ? 'rb' : '';
+  n.style.textShadow = C.glowName && C.nfx !== 'rainbow' ? '0 0 16px ' + C.accent : 'none';
+  n.style.filter = C.glowName && C.nfx === 'rainbow' ? 'drop-shadow(0 0 8px ' + C.accent + ')' : '';
+  const key = name + C.nfx;
+  if (key !== lastKey) { lastKey = key; typeName(name, C.nfx); }
+  $('cd').textContent = C.desc;
+  $('cl').textContent = C.loc ? 'Vị trí: ' + C.loc : '';
+  const L = $('links'); L.innerHTML = '';
+  C.links.split('\n').forEach(line => {
+    const p = line.split('|').map(s => s.trim()), label = p[0], href = p[1] || '';
+    if (!label || !/^https?:\/\//i.test(href)) return;
+    const a = document.createElement('a');
+    a.textContent = label; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.style.color = C.icon; a.style.borderColor = rgba(C.accent, .7);
+    if (C.glowLinks) a.style.boxShadow = '0 0 12px ' + rgba(C.accent, .8);
+    L.append(a);
+  });
+  $('vig').hidden = C.bgfx !== 'vig';
+  snow(C.bgfx === 'snow');
+  $('vcw').hidden = !C.volCtl;
+  $('shade').style.opacity = C.darkness / 100;
+  v.loop = !!C.loop;
+  animTitle(name, C.animTitle);
+}
+
+/* ---------- trang chỉnh cấu hình ---------- */
+const F = [ // [id ô nhập, khóa trong CONFIG, kiểu: t = chữ, n = số, c = bật/tắt]
+  ['vurl', 'videoUrl', 't'], ['vol', 'volume', 'n'], ['dark', 'darkness', 'n'], ['loop', 'loop', 'c'],
+  ['showcard', 'show', 'c'], ['nm', 'name', 't'], ['ds', 'desc', 't'], ['loc', 'loc', 't'], ['bgfx', 'bgfx', 't'], ['nfx', 'nfx', 't'],
+  ['op', 'opacity', 'n'], ['bl', 'blur', 'n'], ['gn', 'glowName', 'c'], ['gs', 'glowLinks', 'c'], ['lk', 'links', 't'],
+  ['ac', 'accent', 't'], ['tc', 'text', 't'], ['bc', 'bg', 't'], ['ic', 'icon', 't'], ['bc2', 'bg2', 't'],
+  ['anim', 'animTitle', 'c'], ['swap', 'swap', 'c'], ['vc', 'volCtl', 'c']
+];
+function setGradUI() {
+  $('gradbtn').classList.toggle('on', C.grad);
+  $('gradbtn').textContent = C.grad ? 'Tắt nền thẻ chuyển màu' : 'Bật nền thẻ chuyển màu';
+  $('bc2w').hidden = !C.grad;
+}
+function fill() {
+  F.forEach(([id, k, t]) => { const e = $(id); if (t === 'c') e.checked = !!C[k]; else e.value = C[k] == null ? '' : C[k]; });
+  setGradUI(); labels();
+}
+function labels() {
+  $('volv').textContent = Math.round(C.volume * 100) + '%';
+  $('darkv').textContent = C.darkness + '%'; $('opv').textContent = C.opacity + '%'; $('blv').textContent = C.blur + 'px';
+  ['ac', 'tc', 'bc', 'ic', 'bc2'].forEach(k => $(k + 'v').textContent = $(k).value);
+}
+function out() {
+  const o = Object.assign({}, C);
+  $('cfgout').value = 'const CONFIG = ' + JSON.stringify(o, null, 2) + ';';
+}
+function read() {
+  F.forEach(([id, k, t]) => { const e = $(id); C[k] = t === 'c' ? e.checked : t === 'n' ? +e.value : e.value; });
+  level = C.volume; if (gain) gain.gain.value = level; else v.volume = Math.min(1, level);
+  $('vcr').value = level;
+  labels(); apply(); out();
+}
+const panel = document.querySelector('#adminPage main');
+panel.addEventListener('input', e => { if (e.target.id !== 'vurl' && e.target.id !== 'fv') read(); });
+panel.addEventListener('change', e => { if (e.target.id !== 'fv' && e.target.id !== 'vurl') read(); });
+
+$('vurl').onchange = () => { read(); if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; } loadVideo(C.videoUrl, false); };
+$('fv').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  if (blobUrl) URL.revokeObjectURL(blobUrl);
+  blobUrl = URL.createObjectURL(f);
+  loadVideo(blobUrl, true);
+};
+$('gradbtn').onclick = () => { C.grad = !C.grad; setGradUI(); read(); };
+$('copy').onclick = async () => {
+  const t = $('cfgout').value;
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) { $('cfgout').select(); document.execCommand('copy'); }
+  $('copied').textContent = 'Đã sao chép! Dán vào Notepad++ thay cho đoạn CONFIG cũ.';
+};
+
+/* ---------- đọc cấu hình đã lưu trên web (ai cũng đọc được, không cần đăng nhập) ---------- */
+async function loadRemote() {
+  if (!FB_ON) return;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 4000);
+    const r = await fetch(DOC + '?key=' + FIREBASE.apiKey, { signal: ctl.signal });
+    clearTimeout(t);
+    if (!r.ok) return;
+    const d = await r.json();
+    const s = d.fields && d.fields.json && d.fields.json.stringValue;
+    if (s) { const o = JSON.parse(s); delete o.adminEnabled; Object.assign(C, o); }
+  } catch (e) {}
+}
+
+/* ---------- đăng nhập admin (Google qua Firebase) ---------- */
+let fbAuth = null, fbMod = null, user = null, authStarted = false;
+function showAdmin(u) {
+  const ok = !FB_ON || !!(u && u.email && u.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  $('adminMain').hidden = !ok;
+  $('loginBox').hidden = ok;
+  $('logout').hidden = !(FB_ON && ok);
+  if (u && !ok) { $('lmsg').textContent = 'Tài khoản ' + u.email + ' không có quyền quản trị.'; $('lmsg').className = 'note err'; fbMod.signOut(fbAuth); }
+}
+async function initAuth() {
+  if (!FB_ON) { showAdmin(null); return; }
+  $('loginBox').hidden = false;
+  try {
+    const [a, b] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js')
+    ]);
+    fbMod = b; fbAuth = b.getAuth(a.initializeApp(FIREBASE));
+    b.onAuthStateChanged(fbAuth, u => { user = u; showAdmin(u); });
+  } catch (e) { $('lmsg').textContent = 'Không tải được Firebase: ' + e.message; $('lmsg').className = 'note err'; }
+}
+const maybeAuth = () => { if (!authStarted && C.adminEnabled && location.hash === '#admin') { authStarted = true; initAuth(); } };
+addEventListener('hashchange', maybeAuth);
+$('login').onclick = () => {
+  if (!fbMod) return;
+  fbMod.signInWithPopup(fbAuth, new fbMod.GoogleAuthProvider()).catch(e => { $('lmsg').textContent = e.message; $('lmsg').className = 'note err'; });
+};
+$('logout').onclick = e => { e.preventDefault(); if (fbMod) fbMod.signOut(fbAuth); };
+
+/* ---------- lưu cấu hình lên web (chỉ admin ghi được, luật Firestore kiểm tra lại ở máy chủ) ---------- */
+$('save').onclick = async () => {
+  const s = $('saved'); s.className = 'note';
+  if (!FB_ON) { s.textContent = 'Chưa cấu hình Firebase nên chưa lưu lên web được. Dùng Sao chép cấu hình.'; return; }
+  if (!user) { s.textContent = 'Hãy đăng nhập trước.'; s.className = 'note err'; return; }
+  $('save').disabled = true; s.textContent = 'Đang lưu...';
+  try {
+    read();
+    const o = Object.assign({}, C); delete o.adminEnabled;
+    const token = await user.getIdToken();
+    const r = await fetch(DOC + '?updateMask.fieldPaths=json&key=' + FIREBASE.apiKey, {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { json: { stringValue: JSON.stringify(o) } } })
+    });
+    if (!r.ok) throw new Error(r.status === 403 ? 'Không có quyền ghi. Kiểm tra luật Firestore và email admin.' : 'Lỗi ' + r.status);
+    s.textContent = 'Đã lưu! Mọi người tải lại trang sẽ thấy cấu hình mới.';
+  } catch (e) { s.textContent = 'Lỗi: ' + e.message; s.className = 'note err'; }
+  $('save').disabled = false;
+};
+
+/* ---------- khởi động ---------- */
+(async () => {
+  $('hint').textContent = 'Đang tải...';
+  await loadRemote();
+  level = C.volume;
+  fill();
+  setLevel(C.volume);
+  loadVideo(C.videoUrl, false);
+  apply();
+  out();
+  route();
+  maybeAuth();
+})();
+</script>
+</body>
+</html>
