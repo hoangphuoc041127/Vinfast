@@ -72,6 +72,8 @@ ol{padding-left:20px;display:grid;gap:4px;color:var(--mute);font-size:14px}
 .gbtn:hover{background:#eef0f2}
 .gbtn svg{width:20px;height:20px;flex:none}
 #pvwrap{position:sticky;top:8px;z-index:10;background:var(--card);padding:8px 0;display:grid;justify-items:center;border-bottom:1px solid #1d2026}
+.pvbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.btn.alt{background:#2a2e38;color:#fff}
 #pvbox{position:relative;overflow:hidden;background:#000;border-radius:10px;width:100%;aspect-ratio:16/9}
 #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #ptint{position:absolute;inset:0;pointer-events:none;opacity:0}
@@ -119,6 +121,16 @@ kbd{font-size:11px;border:1px solid #2a2e38;border-radius:6px;padding:3px 6px;co
 .lrow .lu{flex:3 1 220px;width:auto}
 details summary{cursor:pointer;color:var(--mute);font-size:13px}
 details textarea{margin-top:8px}
+#backadmin{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:9;background:rgba(16,18,24,.7);color:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;text-decoration:none;font-size:14px;backdrop-filter:blur(10px)}
+.sidelink{text-align:center;font-size:12px;color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:#0b0c0e;border:1px solid #23262d;border-radius:12px;padding:14px;display:grid;gap:4px}
+.stat b{font-size:26px;font-weight:600}
+.stat span{font-size:13px;color:var(--mute)}
+.tblwrap{overflow:auto;border:1px solid #23262d;border-radius:10px;max-height:460px}
+#vtable{width:100%;border-collapse:collapse;font-size:13px}
+#vtable th,#vtable td{padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #1d2026}
+#vtable th{position:sticky;top:0;background:#101216;color:var(--mute);font-weight:500}
 .ver{font-size:11px;color:var(--mute);word-break:break-all;text-align:center}
 #toast{position:fixed;right:16px;bottom:16px;z-index:50;background:#1b1d24;border:1px solid #2f7a42;border-radius:10px;padding:10px 14px;max-width:min(360px,calc(100% - 32px));font-size:14px}
 #toast.err{border-color:#7b1e25;color:var(--bad)}
@@ -141,6 +153,8 @@ details textarea{margin-top:8px}
     <div id="links"></div>
   </div>
   <div id="vcw" hidden><span class="note" style="color:inherit">Âm lượng</span><input type="range" id="vcr" min="0" max="2" step="0.05" aria-label="Âm lượng"></div>
+  <a id="backadmin" href="#admin" hidden>← Quay lại chỉnh sửa</a>
+
   <div id="start" role="button" tabindex="0">
     <b>Bấm để vào</b>
     <span id="hint"></span>
@@ -164,7 +178,7 @@ details textarea{margin-top:8px}
       <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="navq" placeholder="Tìm tính năng..." autocomplete="off"><kbd>Ctrl K</kbd></label>
       <nav id="nav"></nav>
       <div class="sidefoot">
-        <div class="helpbox"><span>Xem trang của bạn</span><a class="sidebtn" href="#">Xem trang</a></div>
+        <div class="helpbox"><span>Xem trang của bạn</span><a class="sidebtn" href="#">Xem trang</a><a class="sidelink" id="newtab" target="_blank" rel="noopener">Mở ở tab mới (bản đã lưu)</a></div>
         <button class="sharebtn" id="save2" type="button">Lưu lên web</button>
         <div class="userbox"><span class="av" id="av">T</span><span class="un" id="uname"></span><button class="ib" id="logout2" type="button" title="Đăng xuất" hidden>&#x238B;</button></div>
         <div class="ver" id="ver"></div>
@@ -185,9 +199,9 @@ details textarea{margin-top:8px}
     </div>
     </section>
     <section class="sec" data-sec="fx">
-    <h2>ADMIN</h2>
+    <h2>Chỉnh sửa</h2>
     <div class="card">
-      <div id="pvwrap"><div id="pvbox"><video id="pv" muted loop playsinline controls preload="metadata"></video><div id="ptint"></div></div></div>
+      <div id="pvwrap"><div id="pvbox"><video id="pv" muted loop playsinline controls preload="metadata"></video><div id="ptint"></div></div><div class="pvbar"><button class="btn" id="save3" type="button">Lưu chỉnh sửa video</button><button class="btn alt" id="save4" type="button">Lưu và xem trang</button></div></div>
       <p class="note">Khung xem thử ở trên đổi ngay khi bạn kéo thanh. Xem thử mặc định tắt tiếng và không cắt đầu/cuối. Các chỉnh sửa chỉ áp dụng lúc phát, file video gốc không bị thay đổi.</p>
 
       <div class="fld"><span>Bộ lọc có sẵn</span><div class="presets" id="presets"></div></div>
@@ -274,6 +288,25 @@ details textarea{margin-top:8px}
       </div>
     </div>
     </section>
+    <section class="sec" data-sec="history">
+    <h2>Lịch sử xem trang</h2>
+    <div class="card">
+      <div class="fld" style="display:flex;align-items:center;gap:12px"><span class="sw"><input type="checkbox" id="tracksw"><i></i></span><span>Ghi lịch sử người xem trang (nhớ bấm Lưu lên web sau khi bật hoặc tắt)</span></div>
+      <div class="stats">
+        <div class="stat"><b id="v_total">0</b><span>Tổng lượt xem</span></div>
+        <div class="stat"><b id="v_today">0</b><span>Hôm nay</span></div>
+        <div class="stat"><b id="v_week">0</b><span>7 ngày qua</span></div>
+        <div class="stat"><b id="v_uniq">0</b><span>Người xem khác nhau</span></div>
+      </div>
+      <div class="pvbar" style="justify-content:flex-start"><button class="btn" id="vreload" type="button">Tải lại</button><button class="btn alt" id="vclear" type="button">Xóa lịch sử đã tải</button></div>
+      <p class="note" id="vhmsg">Đăng nhập rồi mở mục này để xem lịch sử.</p>
+      <div class="tblwrap"><table id="vtable"><thead><tr><th>Thời gian</th><th>Thiết bị</th><th>Đến từ</th><th>Ngôn ngữ</th><th>Màn hình</th></tr></thead><tbody id="vbody"></tbody></table></div>
+      <p class="note">Chỉ ghi giờ xem, loại thiết bị và trình duyệt, trang giới thiệu, ngôn ngữ và cỡ màn hình. Không ghi địa chỉ IP, tên hay vị trí của người xem. Lượt xem của chính bạn khi đã đăng nhập trên máy này không được tính.</p>
+      <details><summary>Bắt buộc làm 1 lần: cập nhật luật Firestore để ghi và đọc được lịch sử</summary>
+        <textarea id="rulesbox" readonly spellcheck="false" style="min-height:330px;font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre"></textarea>
+        <p class="note">Vào Firebase, mở Firestore Database, tab Rules, xóa hết nội dung cũ, dán đoạn trên vào rồi bấm Publish.</p></details>
+    </div>
+    </section>
     <section class="sec" data-sec="config">
     <h2>Cấu hình để dán vào file</h2>
     <div class="card">
@@ -298,16 +331,18 @@ details textarea{margin-top:8px}
     </section>
     </main>
   </div>
-  <div id="toast" hidden></div>
 </div>
 
+<div id="toast" hidden></div>
+
 <script>
+location.hash = '#admin';
 // ===BAT DAU CAU HINH=== (đoạn này nằm giữa hai dòng đánh dấu, có thể thay bằng cấu hình sao chép từ trang #admin)
 const CONFIG = {
   "videoUrl": "video.mp4", "volume": 2, "darkness": 25, "loop": true, "show": false, "name": "hoangphuoc", "desc": "", "loc": "",
   "bgfx": "none", "nfx": "none", "opacity": 60, "blur": 10, "glowName": false, "glowLinks": false, "links": "",
   "accent": "#9b6bff", "text": "#f3f5f8", "bg": "#10121a", "icon": "#f3f5f8", "grad": false, "bg2": "#2a1f4d",
-  "animTitle": false, "swap": false, "volCtl": false,
+  "animTitle": false, "swap": false, "volCtl": false, "trackVisits": true,
   "fb": 100, "fc": 100, "fs": 100, "fh": 0, "fbl": 0, "fg": 0, "fse": 0, "fi": 0,
   "tint": "#4da3ff", "tintAmt": 0, "tintBlend": "overlay", "speed": 1, "flipH": false, "flipV": false, "rot": 0,
   "zoom": 100, "px": 0, "py": 0, "fit": "cover", "trimS": 0, "trimE": 0, "adminEnabled": true
@@ -315,7 +350,7 @@ const CONFIG = {
 // ===KET THUC CAU HINH===
 
 // ===CAU HINH FIREBASE=== (điền sau khi tạo project Firebase; để nguyên XXX thì trang chạy ở chế độ thử trên máy)
-const FIREBASE = { apiKey: 'AIzaSyA8OpJVYEZapzGl4EjZQeOPfwsxFILa-gI', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
+const FIREBASE = { apiKey: 'XXX', authDomain: 'webtulam-95a1c.firebaseapp.com', projectId: 'webtulam-95a1c', appId: '1:969664340581:web:f31dfa57dddca301555c8c' };
 const ADMIN_EMAIL = 'vuhoangphuoc69@gmail.com';   // chỉ email này được lưu cấu hình
 // ===KET THUC CAU HINH FIREBASE===
 const FB_ON = FIREBASE.apiKey !== 'XXX';
@@ -329,6 +364,7 @@ function route() {
   const admin = C.adminEnabled && location.hash === '#admin';
   $('adminPage').hidden = !admin;
   $('view').hidden = admin;
+  $('backadmin').hidden = !(fromAdmin && !admin);
   if (admin) { v.pause(); openTab(curTab); }
   else { pv.pause(); if (entered && hasVideo) v.play().catch(() => {}); }
 }
@@ -460,7 +496,7 @@ const F = [
   ['fb', 'fb', 'n'], ['fc', 'fc', 'n'], ['fs', 'fs', 'n'], ['fh', 'fh', 'n'], ['fbl', 'fbl', 'n'], ['fg', 'fg', 'n'], ['fse', 'fse', 'n'], ['fi', 'fi', 'n'],
   ['tintc', 'tint', 't'], ['tintAmt', 'tintAmt', 'n'], ['tintBlend', 'tintBlend', 't'],
   ['zoom', 'zoom', 'n'], ['px', 'px', 'n'], ['py', 'py', 'n'], ['speed', 'speed', 'n'], ['rot', 'rot', 'n'], ['fit', 'fit', 't'],
-  ['flipH', 'flipH', 'c'], ['flipV', 'flipV', 'c'], ['trimS', 'trimS', 'n'], ['trimE', 'trimE', 'n']
+  ['flipH', 'flipH', 'c'], ['flipV', 'flipV', 'c'], ['trimS', 'trimS', 'n'], ['trimE', 'trimE', 'n'], ['tracksw', 'trackVisits', 'c']
 ];
 const SL = {
   fxcolor: [['fb', 'Độ sáng', 0, 200, 5, '%'], ['fc', 'Tương phản', 0, 200, 5, '%'], ['fs', 'Bão hòa màu', 0, 300, 5, '%'], ['fh', 'Sắc độ (xoay màu)', 0, 360, 5, '°'],
@@ -527,11 +563,12 @@ setInterval(() => {
 /* ---------- bảng điều khiển: thanh bên, tab, liên kết mạng xã hội ---------- */
 const TABS = [ // [id, tên, biểu tượng, từ khóa tìm kiếm]
   ['video', 'Video', '<path d="M5 4l14 8-14 8z"/>', 'video clip địa chỉ âm lượng lặp lại độ tối'],
-  ['fx', 'ADMIN', '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>', 'chỉnh video lọc màu phủ màu xoay lật cắt tốc độ phóng to capcut'],
+  ['fx', 'Chỉnh sửa', '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>', 'chỉnh video lọc màu phủ màu xoay lật cắt tốc độ phóng to capcut'],
   ['links', 'Liên kết', '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>', 'mạng xã hội facebook tiktok youtube instagram discord telegram'],
   ['profile', 'Tùy chỉnh chung', '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', 'hồ sơ thẻ tên mô tả vị trí hiệu ứng tuyết viền tối'],
   ['color', 'Màu sắc', '<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="15.5" cy="10" r="1"/>', 'màu nhấn chữ nền thẻ chuyển màu'],
   ['other', 'Khác', '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>', 'tiêu đề động tab thanh âm lượng đổi màu hộp'],
+  ['history', 'Lịch sử xem', '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', 'lịch sử lượt xem người xem thống kê truy cập khách'],
   ['config', 'Cấu hình', '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>', 'lưu sao chép cấu hình dán file hướng dẫn']
 ];
 let curTab = 'video';
@@ -542,6 +579,7 @@ function openTab(id) {
   document.querySelectorAll('.sec').forEach(x => x.classList.toggle('on', x.dataset.sec === id));
   document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x.dataset.tab === id));
   if (id === 'fx') { pvSize(); fxApply(pv); pv.play().catch(() => {}); } else pv.pause();
+  if (id === 'history' && typeof loadVisits === 'function') loadVisits();
   try { sessionStorage.setItem('tab', id); } catch (e) {}
   document.querySelector('.dash>main').scrollTop = 0;
 }
@@ -565,8 +603,24 @@ $('navq').onkeydown = e => {
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
 });
-$('ver').textContent = 'Bản 24/10-v3 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
+$('ver').textContent = 'Bản 25/10-v5 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
 $('save2').onclick = () => $('save').click();
+$('save3').onclick = () => $('save').click();
+$('save4').onclick = () => document.querySelector('a.btn[href="#"]').click();
+/* Xem trang: vào thẳng trang phát (không phải bấm "Bấm để vào" lại), có nút quay lại chỉnh sửa */
+let fromAdmin = false;
+$('newtab').href = location.href.split('#')[0];
+$('adminPage').querySelectorAll('.sidebtn, a.btn[href="#"]').forEach(a => a.addEventListener('click', async e => {
+  e.preventDefault();
+  if (a.classList.contains('btn') && FB_ON && user) { // "Lưu và xem trang": lưu trước, lỗi thì ở lại để đọc thông báo
+    $('save').click();
+    await new Promise(r => { const t = setInterval(() => { if (!$('save').disabled) { clearInterval(t); r(); } }, 100); });
+    if ($('saved').classList.contains('err')) return;
+  }
+  fromAdmin = true;
+  if (!entered) enter();
+  location.hash = '';
+}));
 $('logout2').onclick = () => $('logout').click();
 
 let toastT = 0;
@@ -683,7 +737,7 @@ async function loadRemote() {
   if (!FB_ON) return;
   try {
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 4000);
-    const r = await fetch(DOC + '?key=' + FIREBASE.apiKey, { signal: ctl.signal });
+    const r = await fetch(DOC + '?key=' + FIREBASE.apiKey + '&t=' + Date.now(), { signal: ctl.signal, cache: 'no-store' });
     clearTimeout(t);
     if (!r.ok) return;
     const d = await r.json();
@@ -702,6 +756,7 @@ function showAdmin(u) {
   $('uname').textContent = u && u.email ? u.email : 'Chế độ thử trên máy';
   $('av').textContent = ((u && u.email) || 'T')[0].toUpperCase();
   $('logout2').hidden = $('logout').hidden;
+  if (ok && u) { try { localStorage.setItem('noTrack', '1'); } catch (e) {} if (curTab === 'history') loadVisits(); }
   if (u && !ok) { $('lmsg').textContent = 'Tài khoản ' + u.email + ' không có quyền quản trị.'; $('lmsg').className = 'note err'; fbMod.signOut(fbAuth); }
 }
 async function initAuth() {
@@ -723,6 +778,106 @@ $('login').onclick = () => {
   fbMod.signInWithPopup(fbAuth, new fbMod.GoogleAuthProvider()).catch(e => { $('lmsg').textContent = e.message; $('lmsg').className = 'note err'; });
 };
 $('logout').onclick = e => { e.preventDefault(); if (fbMod) fbMod.signOut(fbAuth); };
+
+/* ---------- lịch sử xem trang ---------- */
+const FS = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE.projectId + '/databases/(default)/documents';
+const RULES = [
+  "rules_version = '2';",
+  "service cloud.firestore {",
+  "  match /databases/{database}/documents {",
+  "    function isAdmin() {",
+  "      return request.auth != null",
+  "        && request.auth.token.email == '" + ADMIN_EMAIL + "'",
+  "        && request.auth.token.email_verified == true;",
+  "    }",
+  "    function okStr(k) {",
+  "      return !(k in request.resource.data)",
+  "        || (request.resource.data[k] is string && request.resource.data[k].size() <= 100);",
+  "    }",
+  "    match /site/config {",
+  "      allow read: if true;",
+  "      allow write: if isAdmin();",
+  "    }",
+  "    match /visits/{id} {",
+  "      allow create: if request.resource.data.keys().hasOnly(['t','ref','dev','lang','scr','sid','path'])",
+  "        && request.resource.data.keys().hasAll(['t','sid'])",
+  "        && okStr('t') && okStr('sid') && okStr('ref') && okStr('dev') && okStr('lang') && okStr('scr') && okStr('path');",
+  "      allow read, delete: if isAdmin();",
+  "    }",
+  "  }",
+  "}"
+].join('\n');
+$('rulesbox').value = RULES;
+
+function trackVisit() { // ghi 1 lượt xem (chỉ trên trang công khai, không ghi IP)
+  try {
+    if (!FB_ON || !C.trackVisits || location.hash === '#admin' || localStorage.getItem('noTrack')) return;
+    let sid = localStorage.getItem('sid');
+    if (!sid) { sid = Math.random().toString(36).slice(2, 10); localStorage.setItem('sid', sid); }
+    const ua = navigator.userAgent;
+    const dev = /iPad|Tablet/i.test(ua) ? 'Máy tính bảng' : /Mobi|Android|iPhone/i.test(ua) ? 'Điện thoại' : 'Máy tính';
+    const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Khác';
+    let ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+    const f = x => ({ stringValue: String(x).slice(0, 80) });
+    fetch(FS + '/visits?key=' + FIREBASE.apiKey, {
+      method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { t: f(new Date().toISOString()), ref: f(ref), dev: f(dev + ' · ' + br), lang: f(navigator.language || ''), scr: f(screen.width + 'x' + screen.height), sid: f(sid), path: f(location.pathname) } })
+    }).catch(() => {});
+  } catch (e) {}
+}
+
+let visitRows = [];
+async function authPost(url, body) {
+  const token = await user.getIdToken();
+  return fetch(url, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+}
+function renderVisits() {
+  const rows = visitRows, n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+  const ts = rows.map(r => Date.parse(r.t) || 0);
+  $('v_today').textContent = ts.filter(t => t >= d0).length;
+  $('v_week').textContent = ts.filter(t => t >= d0 - 6 * 864e5).length;
+  $('v_uniq').textContent = new Set(rows.map(r => r.sid)).size;
+  if (!$('v_total').dataset.exact) $('v_total').textContent = rows.length;
+  const tb = $('vbody'); tb.innerHTML = '';
+  rows.slice(0, 100).forEach(r => { // dữ liệu do người xem gửi lên nên chỉ dùng textContent
+    const tr = document.createElement('tr');
+    [r.t ? new Date(r.t).toLocaleString('vi-VN') : '', r.dev, r.ref || 'Trực tiếp', r.lang, r.scr].forEach(x => { const td = document.createElement('td'); td.textContent = x; tr.append(td); });
+    tb.append(tr);
+  });
+  $('vhmsg').className = 'note';
+  $('vhmsg').textContent = rows.length ? 'Hiện ' + Math.min(100, rows.length) + ' lượt gần nhất. Thống kê hôm nay, 7 ngày và người xem tính trên ' + rows.length + ' lượt gần nhất đã tải (tối đa 300).' : 'Chưa có lượt xem nào.';
+}
+async function loadVisits() {
+  const m = $('vhmsg');
+  if (!FB_ON) { m.className = 'note'; m.textContent = 'Firebase đang tắt nên chưa có lịch sử.'; return; }
+  if (!user) { m.className = 'note'; m.textContent = 'Hãy đăng nhập để xem lịch sử.'; return; }
+  m.className = 'note'; m.textContent = 'Đang tải...';
+  try {
+    const r = await authPost(FS + ':runQuery', { structuredQuery: { from: [{ collectionId: 'visits' }], orderBy: [{ field: { fieldPath: 't' }, direction: 'DESCENDING' }], limit: 300 } });
+    if (!r.ok) throw new Error(r.status === 403 ? 'Chưa có quyền đọc. Hãy cập nhật luật Firestore (mục "Bắt buộc làm 1 lần" bên dưới) rồi bấm Publish.' : 'Lỗi ' + r.status);
+    const data = await r.json();
+    visitRows = data.filter(x => x.document).map(x => {
+      const f = x.document.fields || {}, g = k => (f[k] && f[k].stringValue) || '';
+      return { name: x.document.name, t: g('t'), ref: g('ref'), dev: g('dev'), lang: g('lang'), scr: g('scr'), sid: g('sid') };
+    });
+    delete $('v_total').dataset.exact;
+    renderVisits();
+    authPost(FS + ':runAggregationQuery', { structuredAggregationQuery: { structuredQuery: { from: [{ collectionId: 'visits' }] }, aggregations: [{ alias: 'n', count: {} }] } })
+      .then(x => x.json()).then(d => { const a = d[0] && d[0].result && d[0].result.aggregateFields && d[0].result.aggregateFields.n; if (a && a.integerValue != null) { $('v_total').textContent = a.integerValue; $('v_total').dataset.exact = '1'; } }).catch(() => {});
+  } catch (e) { m.className = 'note err'; m.textContent = 'Lỗi: ' + e.message; }
+}
+$('vreload').onclick = loadVisits;
+$('vclear').onclick = async () => {
+  if (!user || !visitRows.length) return;
+  if (!confirm('Xóa ' + visitRows.length + ' lượt xem đã tải? Không khôi phục được.')) return;
+  try {
+    for (let i = 0; i < visitRows.length; i += 200) {
+      const r = await authPost(FS + ':commit', { writes: visitRows.slice(i, i + 200).map(x => ({ delete: x.name })) });
+      if (!r.ok) throw new Error('Lỗi ' + r.status);
+    }
+    toast('Đã xóa lịch sử đã tải.'); loadVisits();
+  } catch (e) { toast('Lỗi: ' + e.message, true); }
+};
 
 /* ---------- lưu cấu hình lên web (chỉ admin ghi được, luật Firestore kiểm tra lại ở máy chủ) ---------- */
 $('save').onclick = async () => {
@@ -757,6 +912,7 @@ $('save').onclick = async () => {
   out();
   route();
   maybeAuth();
+  trackVisit();
 })();
 </script>
 </body>
