@@ -131,17 +131,31 @@ details textarea{margin-top:8px}
 #vtable{width:100%;border-collapse:collapse;font-size:13px}
 #vtable th,#vtable td{padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #1d2026}
 #vtable th{position:sticky;top:0;background:#101216;color:var(--mute);font-weight:500}
+.side{overflow-x:hidden}
+.sidefoot{gap:10px}
+.sidefoot>*{min-width:0}
+.sidefoot svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sharebtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#6b45c9,#4a2d8c);border:0;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(107,69,201,.35)}
+.sharebtn:hover{background:linear-gradient(135deg,#7b55d9,#5a3d9c)}
+.viewrow{display:flex;gap:8px}
+.sidebtn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#161922;border:1px solid #2a2e3d;border-radius:12px;padding:11px;color:var(--fg);font-weight:600}
+.sidebtn:hover,.iconbtn:hover{border-color:var(--acc);background:#1c1f2b}
+.iconbtn{flex:none;width:44px;display:grid;place-items:center;background:#161922;border:1px solid #2a2e3d;border-radius:12px;color:var(--mute);cursor:pointer;text-decoration:none}
+.iconbtn:hover{color:#fff}
+.userbox{gap:10px;padding:8px 10px}
+.ib{display:grid;place-items:center;padding:0}
+.ib svg{width:16px;height:16px}
 .ver{font-size:11px;color:var(--mute);word-break:break-all;text-align:center}
 #toast{position:fixed;right:16px;bottom:16px;z-index:50;background:#1b1d24;border:1px solid #2f7a42;border-radius:10px;padding:10px 14px;max-width:min(360px,calc(100% - 32px));font-size:14px}
 #toast.err{border-color:#7b1e25;color:var(--bad)}
-@media(max-width:860px){.dash{grid-template-columns:68px minmax(0,1fr)}.side{padding:12px 8px;align-items:center}.brand b,.srch,#nav button span,.helpbox,.un,.ver{display:none}.brand{justify-content:center}#nav{justify-items:center}#nav button{padding:12px;justify-content:center}.sidefoot{width:100%}.sharebtn{font-size:11px;padding:10px 2px}.userbox{flex-direction:column;padding:8px 4px;gap:6px}.dash>main{padding:18px 14px 48px}}
+@media(max-width:860px){.dash{grid-template-columns:68px minmax(0,1fr)}.side{padding:12px 8px;align-items:center}.brand b,.srch,#nav button span,.un,.ver,.sharebtn span,.sidebtn span{display:none}.brand{justify-content:center}#nav{justify-items:center}#nav button{padding:12px;justify-content:center}.sidefoot{width:100%}.sharebtn{padding:10px 0}.viewrow{flex-direction:column}.sidebtn{padding:10px 0}.iconbtn{width:100%;height:40px}.userbox{flex-direction:column;padding:8px 4px;gap:6px}.dash>main{padding:18px 14px 48px}}
 </style>
 </head>
 <body>
 
 <div id="view">
   <div id="bg"></div>
-  <video id="v" playsinline></video>
+  <video id="v" playsinline preload="auto"></video>
   <div id="vtint"></div>
   <div id="shade"></div>
   <div id="vig" hidden></div>
@@ -178,9 +192,12 @@ details textarea{margin-top:8px}
       <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="navq" placeholder="Tìm tính năng..." autocomplete="off"><kbd>Ctrl K</kbd></label>
       <nav id="nav"></nav>
       <div class="sidefoot">
-        <div class="helpbox"><span>Xem trang của bạn</span><a class="sidebtn" href="#">Xem trang</a><a class="sidelink" id="newtab" target="_blank" rel="noopener">Mở ở tab mới (bản đã lưu)</a></div>
-        <button class="sharebtn" id="save2" type="button">Lưu lên web</button>
-        <div class="userbox"><span class="av" id="av">T</span><span class="un" id="uname"></span><button class="ib" id="logout2" type="button" title="Đăng xuất" hidden>&#x238B;</button></div>
+        <button class="sharebtn" id="save2" type="button"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span>Lưu lên web</span></button>
+        <div class="viewrow">
+          <a class="sidebtn" href="#"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Xem trang</span></a>
+          <a class="iconbtn" id="newtab" target="_blank" rel="noopener" title="Mở ở tab mới (bản đã lưu)" aria-label="Mở ở tab mới"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        </div>
+        <div class="userbox"><span class="av" id="av">T</span><span class="un" id="uname"></span><button class="ib" id="logout2" type="button" title="Đăng xuất" aria-label="Đăng xuất" hidden><svg viewBox="0 0 24 24"><path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M16 8l4 4-4 4M20 12H9"/></svg></button></div>
         <div class="ver" id="ver"></div>
       </div>
     </aside>
@@ -406,6 +423,13 @@ function setLevel(x) {
   if (gain) gain.gain.value = x; else v.volume = Math.min(1, x);
   $('volv').textContent = Math.round(x * 100) + '%'; $('vol').value = x; $('vcr').value = x;
 }
+function bufMsg() {
+  if (!hasVideo || entered) return;
+  if (v.readyState >= 3) { $('hint').textContent = 'Video đã sẵn sàng, bấm để phát'; return; }
+  try { if (v.duration && v.buffered.length) $('hint').textContent = 'Đang tải video ' + Math.min(99, Math.round(v.buffered.end(v.buffered.length - 1) / v.duration * 100)) + '%'; } catch (e) {}
+}
+['progress', 'loadedmetadata', 'canplay', 'canplaythrough'].forEach(ev => v.addEventListener(ev, bufMsg));
+
 const enter = () => {
   entered = true; $('start').hidden = true;
   setupAudio(); if (ac && ac.state === 'suspended') ac.resume();
@@ -602,7 +626,7 @@ $('navq').onkeydown = e => {
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
 });
-$('ver').textContent = 'Bản 25/10-v5 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
+$('ver').textContent = 'Bản 25/10-v8 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
 $('save2').onclick = () => $('save').click();
 $('save3').onclick = () => $('save').click();
 $('save4').onclick = () => document.querySelector('a.btn[href="#"]').click();
@@ -618,7 +642,8 @@ $('adminPage').querySelectorAll('.sidebtn, a.btn[href="#"]').forEach(a => a.addE
   }
   fromAdmin = true;
   if (!entered) enter();
-  location.hash = '';
+  history.pushState(null, '', location.pathname + location.search); // về địa chỉ sạch, không còn dấu #
+  route();
 }));
 $('logout2').onclick = () => $('logout').click();
 
@@ -753,6 +778,7 @@ function showAdmin(u) {
   $('loginBox').hidden = ok;
   $('logout').hidden = !(FB_ON && ok);
   $('uname').textContent = u && u.email ? u.email : 'Chế độ thử trên máy';
+  $('uname').title = $('uname').textContent;
   $('av').textContent = ((u && u.email) || 'T')[0].toUpperCase();
   $('logout2').hidden = $('logout').hidden;
   if (ok && u) { try { localStorage.setItem('noTrack', '1'); } catch (e) {} if (curTab === 'history') loadVisits(); }
@@ -902,11 +928,12 @@ $('save').onclick = async () => {
 
 (async () => {
   $('hint').textContent = 'Đang tải...';
+  loadVideo(C.videoUrl, false);              // bắt đầu tải video ngay, không đợi cấu hình từ web
   await loadRemote();
   level = C.volume;
   fill();
   setLevel(C.volume);
-  loadVideo(C.videoUrl, false);
+  if (C.videoUrl !== curSrc) loadVideo(C.videoUrl, false);   // chỉ tải lại nếu cấu hình đã lưu dùng video khác
   apply();
   out();
   route();
