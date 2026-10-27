@@ -318,8 +318,8 @@ details textarea{margin-top:8px}
       </div>
       <div class="pvbar" style="justify-content:flex-start"><button class="btn" id="vreload" type="button">Tải lại</button><button class="btn alt" id="vclear" type="button">Xóa lịch sử đã tải</button></div>
       <p class="note" id="vhmsg">Đăng nhập rồi mở mục này để xem lịch sử.</p>
-      <div class="tblwrap"><table id="vtable"><thead><tr><th>Thời gian</th><th>Thiết bị</th><th>Đến từ</th><th>Ngôn ngữ</th><th>Màn hình</th></tr></thead><tbody id="vbody"></tbody></table></div>
-      <p class="note">Chỉ ghi giờ xem, loại thiết bị và trình duyệt, trang giới thiệu, ngôn ngữ và cỡ màn hình. Không ghi địa chỉ IP, tên hay vị trí của người xem. Lượt xem của chính bạn khi đã đăng nhập trên máy này không được tính.</p>
+      <div class="tblwrap"><table id="vtable"><thead><tr><th>Thời gian</th><th>Thiết bị</th><th>Hệ điều hành</th><th>Múi giờ</th><th>Mạng</th><th>Khách</th><th>Ở lại</th><th>Đến từ</th><th>Ngôn ngữ</th><th>Màn hình</th></tr></thead><tbody id="vbody"></tbody></table></div>
+      <p class="note">Ghi giờ xem, thiết bị, trình duyệt, hệ điều hành, múi giờ, loại mạng, khách mới hay quay lại, thời gian ở lại, trang giới thiệu, ngôn ngữ và cỡ màn hình. Không ghi địa chỉ IP, tên hay vị trí chính xác của người xem. Lượt xem của chính bạn khi đã đăng nhập trên máy này không được tính.</p>
       <details><summary>Bắt buộc làm 1 lần: cập nhật luật Firestore để ghi và đọc được lịch sử</summary>
         <textarea id="rulesbox" readonly spellcheck="false" style="min-height:330px;font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre"></textarea>
         <p class="note">Vào Firebase, mở Firestore Database, tab Rules, xóa hết nội dung cũ, dán đoạn trên vào rồi bấm Publish.</p></details>
@@ -629,7 +629,7 @@ $('navq').onkeydown = e => {
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
 });
-$('ver').textContent = 'Bản 27/10-v9 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
+$('ver').textContent = 'Bản 27/10-v10 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
 $('save2').onclick = () => $('save').click();
 $('save3').onclick = () => $('save').click();
 $('save4').onclick = () => document.querySelector('a.btn[href="#"]').click();
@@ -827,9 +827,12 @@ const RULES = [
   "      allow write: if isAdmin();",
   "    }",
   "    match /visits/{id} {",
-  "      allow create: if request.resource.data.keys().hasOnly(['t','ref','dev','lang','scr','sid','path'])",
+  "      allow create: if request.resource.data.keys().hasOnly(['t','ref','dev','lang','scr','sid','path','os','tz','net','ret','dur'])",
   "        && request.resource.data.keys().hasAll(['t','sid'])",
-  "        && okStr('t') && okStr('sid') && okStr('ref') && okStr('dev') && okStr('lang') && okStr('scr') && okStr('path');",
+  "        && okStr('t') && okStr('sid') && okStr('ref') && okStr('dev') && okStr('lang') && okStr('scr') && okStr('path')",
+  "        && okStr('os') && okStr('tz') && okStr('net') && okStr('ret') && okStr('dur');",
+  "      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dur'])",
+  "        && okStr('dur');",
   "      allow read, delete: if isAdmin();",
   "    }",
   "  }",
@@ -840,17 +843,41 @@ $('rulesbox').value = RULES;
 function trackVisit() { // ghi 1 lượt xem (chỉ trên trang công khai, không ghi IP)
   try {
     if (!FB_ON || !C.trackVisits || location.hash === '#admin' || localStorage.getItem('noTrack')) return;
-    let sid = localStorage.getItem('sid');
-    if (!sid) { sid = Math.random().toString(36).slice(2, 10); localStorage.setItem('sid', sid); }
+    let sid = localStorage.getItem('sid'), ret = 'Quay lại';
+    if (!sid) { sid = Math.random().toString(36).slice(2, 10); localStorage.setItem('sid', sid); ret = 'Mới'; }
     const ua = navigator.userAgent;
     const dev = /iPad|Tablet/i.test(ua) ? 'Máy tính bảng' : /Mobi|Android|iPhone/i.test(ua) ? 'Điện thoại' : 'Máy tính';
     const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Khác';
+    let os = 'Khác', m;
+    if ((m = ua.match(/Android ([\d.]+)/))) os = 'Android ' + m[1];
+    else if ((m = ua.match(/(?:iPhone|CPU) OS ([\d_]+)/))) os = 'iOS ' + m[1].replace(/_/g, '.');
+    else if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Mac OS X/.test(ua)) os = 'macOS';
+    else if (/CrOS/.test(ua)) os = 'ChromeOS';
+    else if (/Linux/.test(ua)) os = 'Linux';
+    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    const cn = navigator.connection || {};
+    const net = (cn.effectiveType || '') + (cn.saveData ? ' · tiết kiệm dữ liệu' : '');
     let ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
     const f = x => ({ stringValue: String(x).slice(0, 80) });
-    fetch(FS + '/visits?key=' + FIREBASE.apiKey, {
+    const id = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+    const scr = screen.width + 'x' + screen.height + ' @' + (window.devicePixelRatio || 1) + 'x';
+    fetch(FS + '/visits?documentId=' + id + '&key=' + FIREBASE.apiKey, {
       method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields: { t: f(new Date().toISOString()), ref: f(ref), dev: f(dev + ' · ' + br), lang: f(navigator.language || ''), scr: f(screen.width + 'x' + screen.height), sid: f(sid), path: f(location.pathname) } })
+      body: JSON.stringify({ fields: { t: f(new Date().toISOString()), ref: f(ref), dev: f(dev + ' · ' + br), lang: f(navigator.language || ''), scr: f(scr), sid: f(sid), path: f(location.pathname), os: f(os), tz: f(tz), net: f(net), ret: f(ret), dur: f('0') } })
     }).catch(() => {});
+    // thời gian ở lại trang: cộng dồn lúc trang đang hiện, gửi khi rời hoặc ẩn tab
+    let shown = document.visibilityState === 'visible' ? Date.now() : 0, acc = 0;
+    const sendDur = () => {
+      if (shown) { acc += Date.now() - shown; shown = 0; }
+      const secs = Math.round(acc / 1000); if (secs < 1) return;
+      fetch(FS + '/visits/' + id + '?updateMask.fieldPaths=dur&key=' + FIREBASE.apiKey, {
+        method: 'PATCH', keepalive: true, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { dur: f(secs) } })
+      }).catch(() => {});
+    };
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') sendDur(); else if (!shown) shown = Date.now(); });
+    addEventListener('pagehide', sendDur);
   } catch (e) {}
 }
 
@@ -858,6 +885,10 @@ let visitRows = [];
 async function authPost(url, body) {
   const token = await user.getIdToken();
   return fetch(url, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+}
+function fmtDur(d) {
+  const n = parseInt(d, 10); if (!n) return '—';
+  return n < 60 ? n + ' giây' : Math.floor(n / 60) + ' phút ' + (n % 60) + ' giây';
 }
 function renderVisits() {
   const rows = visitRows, n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
@@ -869,7 +900,7 @@ function renderVisits() {
   const tb = $('vbody'); tb.innerHTML = '';
   rows.slice(0, 100).forEach(r => { // dữ liệu do người xem gửi lên nên chỉ dùng textContent
     const tr = document.createElement('tr');
-    [r.t ? new Date(r.t).toLocaleString('vi-VN') : '', r.dev, r.ref || 'Trực tiếp', r.lang, r.scr].forEach(x => { const td = document.createElement('td'); td.textContent = x; tr.append(td); });
+    [r.t ? new Date(r.t).toLocaleString('vi-VN') : '', r.dev, r.os || '—', r.tz || '—', r.net || '—', r.ret || '—', fmtDur(r.dur), r.ref || 'Trực tiếp', r.lang, r.scr].forEach(x => { const td = document.createElement('td'); td.textContent = x; tr.append(td); });
     tb.append(tr);
   });
   $('vhmsg').className = 'note';
@@ -886,7 +917,7 @@ async function loadVisits() {
     const data = await r.json();
     visitRows = data.filter(x => x.document).map(x => {
       const f = x.document.fields || {}, g = k => (f[k] && f[k].stringValue) || '';
-      return { name: x.document.name, t: g('t'), ref: g('ref'), dev: g('dev'), lang: g('lang'), scr: g('scr'), sid: g('sid') };
+      return { name: x.document.name, t: g('t'), ref: g('ref'), dev: g('dev'), lang: g('lang'), scr: g('scr'), sid: g('sid'), os: g('os'), tz: g('tz'), net: g('net'), ret: g('ret'), dur: g('dur') };
     });
     delete $('v_total').dataset.exact;
     renderVisits();
