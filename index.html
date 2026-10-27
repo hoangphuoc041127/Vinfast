@@ -153,6 +153,7 @@ details textarea{margin-top:8px}
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="sharpf" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feConvolveMatrix id="sharpk" order="3" kernelMatrix="0 0 0 0 1 0 0 0 0" preserveAlpha="true"/></filter></svg>
 <div id="view">
   <div id="bg"></div>
   <video id="v" playsinline preload="auto"></video>
@@ -359,7 +360,7 @@ const CONFIG = {
   "bgfx": "none", "nfx": "none", "opacity": 60, "blur": 10, "glowName": false, "glowLinks": false, "links": "",
   "accent": "#9b6bff", "text": "#f3f5f8", "bg": "#10121a", "icon": "#f3f5f8", "grad": false, "bg2": "#2a1f4d",
   "animTitle": false, "swap": false, "volCtl": false, "trackVisits": true,
-  "fb": 100, "fc": 100, "fs": 100, "fh": 0, "fbl": 0, "fg": 0, "fse": 0, "fi": 0,
+  "fb": 100, "fc": 100, "fs": 100, "fh": 0, "fbl": 0, "fg": 0, "fse": 0, "fi": 0, "fsh": 0,
   "tint": "#4da3ff", "tintAmt": 0, "tintBlend": "overlay", "speed": 1, "flipH": false, "flipV": false, "rot": 0,
   "zoom": 100, "px": 0, "py": 0, "fit": "cover", "trimS": 0, "trimE": 0, "adminEnabled": true
 };
@@ -516,13 +517,13 @@ const F = [
   ['op', 'opacity', 'n'], ['bl', 'blur', 'n'], ['gn', 'glowName', 'c'], ['gs', 'glowLinks', 'c'], ['lk', 'links', 't'],
   ['ac', 'accent', 't'], ['tc', 'text', 't'], ['bc', 'bg', 't'], ['ic', 'icon', 't'], ['bc2', 'bg2', 't'],
   ['anim', 'animTitle', 'c'], ['swap', 'swap', 'c'], ['vc', 'volCtl', 'c'],
-  ['fb', 'fb', 'n'], ['fc', 'fc', 'n'], ['fs', 'fs', 'n'], ['fh', 'fh', 'n'], ['fbl', 'fbl', 'n'], ['fg', 'fg', 'n'], ['fse', 'fse', 'n'], ['fi', 'fi', 'n'],
+  ['fb', 'fb', 'n'], ['fc', 'fc', 'n'], ['fs', 'fs', 'n'], ['fh', 'fh', 'n'], ['fbl', 'fbl', 'n'], ['fg', 'fg', 'n'], ['fse', 'fse', 'n'], ['fi', 'fi', 'n'], ['fsh', 'fsh', 'n'],
   ['tintc', 'tint', 't'], ['tintAmt', 'tintAmt', 'n'], ['tintBlend', 'tintBlend', 't'],
   ['zoom', 'zoom', 'n'], ['px', 'px', 'n'], ['py', 'py', 'n'], ['speed', 'speed', 'n'], ['rot', 'rot', 'n'], ['fit', 'fit', 't'],
   ['flipH', 'flipH', 'c'], ['flipV', 'flipV', 'c'], ['trimS', 'trimS', 'n'], ['trimE', 'trimE', 'n'], ['tracksw', 'trackVisits', 'c']
 ];
 const SL = {
-  fxcolor: [['fb', 'Độ sáng', 0, 200, 5, '%'], ['fc', 'Tương phản', 0, 200, 5, '%'], ['fs', 'Bão hòa màu', 0, 300, 5, '%'], ['fh', 'Sắc độ (xoay màu)', 0, 360, 5, '°'],
+  fxcolor: [['fsh', 'Làm nét', 0, 100, 5, '%'], ['fb', 'Độ sáng', 0, 200, 5, '%'], ['fc', 'Tương phản', 0, 200, 5, '%'], ['fs', 'Bão hòa màu', 0, 300, 5, '%'], ['fh', 'Sắc độ (xoay màu)', 0, 360, 5, '°'],
     ['fbl', 'Làm mờ video', 0, 20, 0.5, 'px'], ['fg', 'Trắng đen', 0, 100, 5, '%'], ['fse', 'Nâu cổ điển (sepia)', 0, 100, 5, '%'], ['fi', 'Đảo màu', 0, 100, 5, '%']],
   fxtint: [['tintAmt', 'Độ đậm màu phủ', 0, 100, 5, '%']],
   fxmove: [['zoom', 'Phóng to', 100, 300, 5, '%'], ['px', 'Dịch ngang', -50, 50, 1, '%'], ['py', 'Dịch dọc', -50, 50, 1, '%'], ['speed', 'Tốc độ phát', 0.25, 3, 0.05, 'x']]
@@ -530,7 +531,7 @@ const SL = {
 Object.keys(SL).forEach(cid => {
   $(cid).innerHTML = SL[cid].map(s => '<label class="fld"><span>' + s[1] + ': <b id="' + s[0] + '_v"></b></span><input type="range" id="' + s[0] + '" min="' + s[2] + '" max="' + s[3] + '" step="' + s[4] + '"></label>').join('');
 });
-const FXDEF = { fb: 100, fc: 100, fs: 100, fh: 0, fbl: 0, fg: 0, fse: 0, fi: 0, tint: '#4da3ff', tintAmt: 0, tintBlend: 'overlay' };
+const FXDEF = { fb: 100, fc: 100, fs: 100, fh: 0, fbl: 0, fg: 0, fse: 0, fi: 0, fsh: 0, tint: '#4da3ff', tintAmt: 0, tintBlend: 'overlay' };
 const FXRESET = Object.assign({}, FXDEF, { speed: 1, flipH: false, flipV: false, rot: 0, zoom: 100, px: 0, py: 0, fit: 'cover', trimS: 0, trimE: 0 });
 const PRESETS = {
   'Gốc': {},
@@ -561,8 +562,10 @@ $('getE').onclick = () => { $('trimE').value = pv.currentTime.toFixed(1); read()
 function fxApply(el) {
   const p = el.parentElement, W = p.clientWidth || 1, H = p.clientHeight || 1;
   const odd = (+C.rot / 90) % 2 !== 0, k = (C.zoom / 100) * (odd ? Math.max(W / H, H / W) : 1);
-  const neutral = C.fb == 100 && C.fc == 100 && C.fs == 100 && C.fh == 0 && C.fbl == 0 && C.fg == 0 && C.fse == 0 && C.fi == 0;
-  el.style.filter = neutral ? 'none' : 'brightness(' + C.fb + '%) contrast(' + C.fc + '%) saturate(' + C.fs + '%) hue-rotate(' + C.fh + 'deg) blur(' + C.fbl + 'px) grayscale(' + C.fg + '%) sepia(' + C.fse + '%) invert(' + C.fi + '%)';
+  const neutral = C.fb == 100 && C.fc == 100 && C.fs == 100 && C.fh == 0 && C.fbl == 0 && C.fg == 0 && C.fse == 0 && C.fi == 0 && !(+C.fsh > 0);
+  const sh = (+C.fsh || 0) / 100 * 0.8;
+  const kk = $('sharpk'); if (kk) kk.setAttribute('kernelMatrix', '0 ' + (-sh) + ' 0 ' + (-sh) + ' ' + (1 + 4 * sh) + ' ' + (-sh) + ' 0 ' + (-sh) + ' 0');
+  el.style.filter = neutral ? 'none' : 'brightness(' + C.fb + '%) contrast(' + C.fc + '%) saturate(' + C.fs + '%) hue-rotate(' + C.fh + 'deg) blur(' + C.fbl + 'px) grayscale(' + C.fg + '%) sepia(' + C.fse + '%) invert(' + C.fi + '%)' + (sh > 0 ? ' url(#sharpf)' : '');
   el.style.transform = 'translate(' + C.px + '%,' + C.py + '%) rotate(' + C.rot + 'deg) scale(' + (C.flipH ? -k : k) + ',' + (C.flipV ? -k : k) + ')';
   el.style.objectFit = C.fit;
 }
@@ -626,7 +629,7 @@ $('navq').onkeydown = e => {
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !$('adminPage').hidden) { e.preventDefault(); $('navq').focus(); }
 });
-$('ver').textContent = 'Bản 25/10-v8 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
+$('ver').textContent = 'Bản 27/10-v9 · Firebase ' + (FB_ON ? 'BẬT' : 'TẮT') + ' · ' + location.host + location.pathname;
 $('save2').onclick = () => $('save').click();
 $('save3').onclick = () => $('save').click();
 $('save4').onclick = () => document.querySelector('a.btn[href="#"]').click();
